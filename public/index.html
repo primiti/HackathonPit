@@ -31,31 +31,31 @@
     <script type="text/javascript">
 
     var app;
+    var socket_wrapper, socket_view;
+	
+	
+	function sendIfEnter( textarea, evt )
+	{	
+	  if ( socket && evt.keyCode == '13' )
+	  {
+	    socket.send( $(textarea).val() );
+	    $(textarea).val('');
+	  }
+	}
 
-  var socket_wrapper, socket_view;
+	function login( form )
+	{
+	  var user = $(form).find( 'input[name=name]' ).val();
 
-function sendIfEnter( textarea, evt )
-{
-  if ( socket && evt.keyCode == '13' )
-  {
-    socket.send( $(textarea).val() );
-    $(textarea).val('');
-  }
-}
+	  if ( !user )
+	  {
+	    alert( "Username required!" );
+	    return false;
+	  }
 
-function login( form )
-{
-  var user = $(form).find( 'input[name=name]' ).val();
-
-  if ( !user )
-  {
-    alert( "Username required!" );
-    return false;
-  }
-
-  app.lobby.login( user );
-  return false;
-}
+	  app.lobby.login( user );
+	  return false;
+	}
 
 function setup()
 {
@@ -81,12 +81,7 @@ function setup()
 
 
   socket_wrapper = new SocketWrapper( { host : 'localhost', port : 8080 } );
-
-  // auto connect if connect is in hash
-  if ( window.location.hash.search( /connect/ ) != -1 ) {
-    socket_wrapper.connect();
-  }
-
+  socket_wrapper.connect();
 };
 
 
@@ -140,6 +135,7 @@ $(window).unload( function() {
 
       <footer>
         <p>&copy; 2012 Team Irish.  Created at RingRevenue Hackathon 2012.</p>
+        <textarea onkeyup="sendIfEnter(this, event)" rows=3 col=30></textarea>
       </footer>
 
     </div><!--/.fluid-container-->

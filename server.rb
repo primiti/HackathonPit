@@ -24,29 +24,29 @@ class ServerApp < Sinatra::Base
     send_file File.join(settings.public_folder, 'index.html')
   end
 end
-Thin::Server.start ServerApp, '0.0.0.0', 4000
 
-  
 EventMachine.run do
   EventMachine::WebSocket.start(:host => '0.0.0.0', :port => 8080) do |socket|
     socket.onopen do
+      puts "new socket"
       @game.add_player socket
+      puts "sending updates"
       @game.send_updates
     end
     
     socket.onmessage do |mess|
       # Process message
-      
+      puts "Received message #{mess.inspect}"
       # Sends to every other player.
       @game.send_updates
     end
     
     socket.onclose do
-      @game.remove_player socket
+      @game.remove_player_for_socket socket
       
       # Sends to every other player.
       @game.send_updates
     end
   end
-
+  Thin::Server.start ServerApp, '0.0.0.0', 4000
 end

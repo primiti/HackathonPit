@@ -68,10 +68,12 @@ class ModelTest < MiniTest::Spec
       context "resolving offers" do
         setup do 
           @g = Game.new
+          
           @p1 = @g.add_player "socket"
           @p2 = @g.add_player "socket"
           @p3 = @g.add_player "socket"
           @p4 = @g.add_player "socket"
+          @g.start
           
           @player1 = @g.players[0]
           @player2 = @g.players[1]
@@ -223,6 +225,8 @@ class ModelTest < MiniTest::Spec
                 { "player_name"=>"Merry", 
                    "offer"=>nil
                 }],
+                "state"=>"running",
+                "last_result"=>""
               }
               
            assert_equal expected, @g.to_hash_for_player(@p1)
