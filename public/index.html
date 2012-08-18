@@ -20,10 +20,10 @@
 
     var app;
     var socket_wrapper, socket_view;
-	
-	
+
+
 	function sendIfEnter( textarea, evt )
-	{	
+	{
 	  if ( socket && evt.keyCode == '13' )
 	  {
 	    socket.send( $(textarea).val() );
@@ -49,7 +49,7 @@ function setup()
 {
     app = new App.MainView({ el: $("#application") });
 
-    app.model = { 
+    app.model = {
 		hand : new App.Hand( {
 	       cards : {
 	          "Cocoa" : 4,
@@ -61,20 +61,20 @@ function setup()
 	          "Silver" : 0,
 	          "Gas" : 0
 	        } } ),
- 		other_players : new App.OtherPlayers(  { 
-			player_list: [ 
-		        { "player_name" : "Frodo", 
-		           "offer" : { "card_type" : "Platinum", "count" : 2, "trade_with" : "Bilbo" }                     
-		        }, 
-		        { "player_name" : "Sam", 
-		           "offer" : { "card_type" : "Cocoa", "count" : 1, "trade_with" : null }                     
-		        }, 
-		        { "player_name" : "Merry", 
+ 		other_players : new App.OtherPlayers(  {
+			player_list: [
+		        { "player_name" : "Frodo",
+		           "offer" : { "card_type" : "Platinum", "count" : 2, "trade_with" : "Bilbo" }
+		        },
+		        { "player_name" : "Sam",
+		           "offer" : { "card_type" : "Cocoa", "count" : 1, "trade_with" : null }
+		        },
+		        { "player_name" : "Merry",
 		           "offer" : null
 		        }
 			] } ),
 		this_player : new App.ThisPlayer( { "name" : "Bilbo" } ),
-		game : new App.Game( { "state" : "running" } )			
+		game : new App.Game( { "state" : "running" } )
 	};
 
     app.render();
@@ -86,7 +86,7 @@ function setup()
 
   socket_wrapper = new SocketWrapper( { host : 'localhost', port : 8080 } );
   socket_wrapper.connect();
-  
+
 };
 
 
@@ -159,7 +159,7 @@ $(window).unload( function() {
     <script type="text/html" id="application-game">
       <div id='board'></div>
     </script>
-    
+
     <script type="text/html" id="application-game-controls">
       <div class="game-controls">
         <% if ( state == 'running' ) { %>
@@ -174,8 +174,8 @@ $(window).unload( function() {
       <div id='game-state'></div>
       <div id='controls'></div>
       <div id='trade-list'></div>
-      <div id='this-player'></div>	  
-      <div id='other-players'></div>	  
+      <div id='this-player'></div>
+      <div id='other-players'></div>
       <div id='hand'></div>
       <div class='clear_left'></div>
       <div id='offer-count'></div>
@@ -200,7 +200,7 @@ $(window).unload( function() {
 	    <div class="this-player">
 	      <%= name %>
 	    </div>
-	
+
 	</script>
 
     <script type="text/html" id="application-game-offer-count-number">
@@ -216,17 +216,16 @@ $(window).unload( function() {
         <h2><%= count %></h2>
       </div>
     </script>
-	
 
     <script type="text/html" id="application-other-players">
-    </br>	
+    </br>
     </script>
     <script type="text/html" id="application-other-player">
 	    <div class="other_player">
 	      <%= name %> offers <%= offer_count %> cards.  ( wants to trade with <%= trade_with %>)
 		  <br>
 	    </div>
-	    </br>	
+	    </br>
     </script>
 
 
