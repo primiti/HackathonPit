@@ -2,6 +2,7 @@ App.BoardView = Backbone.View.extend({
   template: _.template($("#application-game-board").html()),
 
   initialize: function() {
+    this.model.game.bind( "change:state", this.checkGameState, this );
   },
 
   render: function() {
@@ -18,13 +19,20 @@ App.BoardView = Backbone.View.extend({
 
     this.gameControls.render();
     this.tradeList.render();
-    this.hand.render();
-    this.offerCount.render();
     this.other_players.render();
     this.this_player.render();
     this.sound_player.render();
 
+    this.checkGameState();
+
     return this;
+  },
+
+  checkGameState: function() {
+    if( this.model.game.get('state') == 'running' ) {
+      this.hand.render();
+      this.offerCount.render();
+    }
   }
 });
 
@@ -66,11 +74,11 @@ App.GameControlsView = Backbone.View.extend({
   initialize: function() {
     this.model.bind( "change:state", this.render, this );
   },
-  
+
   events: {
     "click .btn" : "clicked"
   },
-  
+
   clicked: function( evt ) {
     if ( this.model.get( 'state' ) == 'lobby' )
     {
@@ -101,21 +109,21 @@ App.OtherPlayersView = Backbone.View.extend({
   render: function() {
 
     $(this.el).html( this.template( this.model ) );
- 
+
     _.each( this.model.attributes.player_list, function ( other_player ) {
       var other_player_container = jQuery( "<div></div>" );
-      this.$el.append( other_player_container );	  
+      this.$el.append( other_player_container );
       var other_player_fixed = {
         name : other_player.player_name,
         offer_count : 0,
         trade_with : null
     };
-   
+
     if ( other_player.offer )
     {
       other_player_fixed["offer_count"] = other_player.offer.count;
       other_player_fixed["trade_with"] = other_player.offer.trade_with;
-    }	  
+    }
       var other_player_view = new App.OtherPlayerView( { model : new App.OtherPlayer(other_player_fixed), el : other_player_container } );
       other_player_view.render();
     }, this );
@@ -180,7 +188,7 @@ App.HandView = Backbone.View.extend({
     this.model.bind( "change:cards", this.render, this );
     this.model.bind( "change:chosen_commodity", this.commodity_changed, this );
   },
-    
+
   commodity_changed: function() {
       this.render();
   },
@@ -206,7 +214,7 @@ App.CardView = Backbone.View.extend({
 
   initialize : function() {
   },
-  
+
   events: {
     "click .card": "choose"
   },
@@ -228,23 +236,27 @@ App.OfferCountView = Backbone.View.extend({
   initialize : function() {
     this.model.bind( "change:chosen_commodity", this.render, this );
   },
-  
+
   events: {
     "click .btn": "choose"
   },
-  
+
   choose: function( evt ) {
     this.model.set( { 'chosen_offer_count' : jQuery( evt.target ).text() } );
   },
 
   render: function() {
+    console.log("COUNT MODEL");
+    console.log(this.model);
     var number_template = _.template($("#application-game-offer-count-number").html());
     $(this.el).html( this.template( this.model ) );
 
     var commodity   = this.model.get( 'chosen_commodity' );
     var max_number  = '';
+    console.log(commodity);
+    console.log(max_number);
 
-    if ( cards = this.model.get( 'cards' ) )
+    if ( commodity && ( cards = this.model.get( 'cards' ) ) )
     {
       max_number = cards[commodity];
     }
@@ -279,9 +291,20 @@ App.Hand = Backbone.Model.extend({
   initialize : function() {
     this.bind( "change:chosen_offer_count", this.make_offer, this );
   },
-  
+
   make_offer: function() {
-    client.sendMessage( 'make_offer ' + this.get( 'chosen_commodity' ) + ' ' + this.get( 'chosen_offer_count' ) );
+    var commodity = this.get( 'chosen_commodity' );
+    var count     = this.get( 'chosen_offer_count' );
+    console.log("MAKE OFFER");
+    console.log(this);
+    console.log(count);
+    console.log(this.get( 'cards' )[commodity]);
+    if( count <= this.get( 'cards' )[commodity] ) {
+      client.sendMessage( 'make_offer ' + commodity + ' ' + count );
+    }
+    else {
+      console.log('cannot make this trade');
+    }
   }
 });
 
@@ -290,11 +313,11 @@ App.Card = Backbone.Model.extend({});
 App.Client = Backbone.Model.extend({
   initialize : function() {
     this.socket_wrapper = new SocketWrapper( { host : window.location.hostname, port : 8080 } );
-  
+
     this.socket_wrapper.bind( "socket:message", this.receiveMessage )
     this.socket_wrapper.connect();
   },
-  
+
   receiveMessage : function( response )
   {
     app.model.hand.set( { cards: response.this_player.hand } );
@@ -303,7 +326,7 @@ App.Client = Backbone.Model.extend({
     app.model.game.set( { state: response.state } );
     app.model.sound.set( { sound_to_play: response.sound_to_play } );
   },
-  
+
   sendMessage : function( message )
   {
     console.log( "CLIENT::sendMessage( '" + message + "' )")
