@@ -3,14 +3,14 @@ class Hand
   end
   
   CARD_TYPES = [
-    Card.new("Cocoa", 100),
-    Card.new("Platinum",	85 ),
-    Card.new("Gold",80 ),
-    Card.new("Cattle",	75 ),
-    Card.new("Oil",	65 ),
-    Card.new("Rice",	60 ),
-    Card.new("Silver",	55 ),
-    Card.new("Gas",	50 ),
+    Card.new("Netbeans", 100),
+    Card.new("Vim",	85 ),
+    Card.new("Sublime",80 ),
+    Card.new("RubyMine",	75 ),
+    Card.new("Eclipse",	65 ),
+    Card.new("TextWrangler",	60 ),
+    Card.new("Emacs",	55 ),
+    Card.new("TextMate",	50 ),
   ]
   
   CARD_NAMES = CARD_TYPES.map{ |card| card.type }

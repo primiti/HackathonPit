@@ -33,7 +33,9 @@ body {
 @media (max-width: 480px) {
   .card {
     min-width: 30px;
-    padding: .5em; } }
+    padding: .5em; }
+    .card h1 {
+      font-size: 1em; } }
 #offer-count .btn {
   min-width: 20%; }
 
