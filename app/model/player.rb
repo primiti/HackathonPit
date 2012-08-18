@@ -1,3 +1,5 @@
+require "app/model/offer.rb"
+
 class Player
   PLAYER_NAMES=[
     "Bilbo",
@@ -18,10 +20,14 @@ class Player
   ]
     
 
-  attr_accessor :hand, :name
-  def initialize
+  attr_accessor :hand, :name, :offer
+  def initialize name
     @hand = Hand.new
-    @name = PLAYER_NAMES.shuffle.first
+    @name = name
+  end
+  
+  def make_offer card_type, count
+    @offer=Offer.new card_type, count  
   end
   
 end

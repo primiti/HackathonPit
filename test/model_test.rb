@@ -39,8 +39,10 @@ class ModelTest < MiniTest::Spec
         should "have a start game method that adds 9 cards to each player" do 
           @g.start
           card_counts = {}
-          [@p1, @p2, @p3, @p4].each do |p|
-            assert_equal 9, p.hand.cards.values.sum
+          @g.players.each do |p|
+            count = 0
+            p.hand.cards.values.each { |v| count += v }
+            assert_equal 9, count
             Hand::CARD_NAMES.each do |name| 
               card_counts[name] ||= 0
               card_counts[name] += p.hand.cards[name]
@@ -51,13 +53,165 @@ class ModelTest < MiniTest::Spec
           assert_equal (Hand::CARD_NAMES.size-4), card_counts.values.select{ |v| v == 0 }.count                    
         end
         should "not have duplicate player names" do
-          assert false
+          5.times { @g.add_player }
+          uniq_names = @g.players.map{|p| p.name }.sort.uniq 
+          assert_equal @g.players.count, uniq_names.count
+        end
+        
+        should "find the players by name" do 
+          @g.players.each do |player|
+            assert_equal player.name, @g.find_player(player.name).name
+          end
         end
       end  
+      
+      context "resolving offers" do
+        setup do 
+          @g = Game.new
+          @p1 = @g.add_player
+          @p2 = @g.add_player
+          @p3 = @g.add_player
+          @p4 = @g.add_player
+          
+          @player1 = @g.players[0]
+          @player2 = @g.players[1]
+          
+          @p1.name = "Bilbo"
+          @p1.hand.cards = {
+                "Cocoa" => 4,
+                "Platinum" => 2,
+                "Gold" => 0,
+                "Cattle" => 1,
+                "Oil" => 2,
+                "Rice" => 0,
+                "Silver" => 0,
+                "Gas" => 0,
+               } 
+               
+          @p2.name = "Frodo"
+          @p2.hand.cards = {
+                "Cocoa" => 4,
+                "Platinum" => 2,
+                "Gold" => 0,
+                "Cattle" => 1,
+                "Oil" => 2,
+                "Rice" => 0,
+                "Silver" => 0,
+                "Gas" => 0,
+               }
+          @p3.name = "Sam"
+          @p3.hand.cards = {
+                "Cocoa" => 1,
+                "Platinum" => 2,
+                "Gold" => 0,
+                "Cattle" => 6,
+                "Oil" => 0,
+                "Rice" => 0,
+                "Silver" => 0,
+                "Gas" => 0,
+               }
+          @p4.name = "Merry"
+          @p4.hand.cards = {
+                "Cocoa" => 0,
+                "Platinum" => 3,
+                "Gold" => 0,
+                "Cattle" => 1,
+                "Oil" => 5,
+                "Rice" => 0,
+                "Silver" => 0,
+                "Gas" => 0,
+               }
+        end
+        should "delete offers that are not equal size" do
+          @player1.make_offer "Cocoa", 3
+          @player1.offer.trade_with=@player2.name
+          
+          @player2.make_offer "Rice", 2
+          
+          @g.resolve_offers
+          
+          assert_equal "Cocoa", @player1.offer.card_type
+          assert_equal 3, @player1.offer.count
+          assert_nil @player1.offer.trade_with 
+          
+        end
+        
+        should "Delete the offer with if the remote player does not have a matching offer" do
+          @player1.make_offer "Cocoa", 3
+          @player1.offer.trade_with=@player2.name
+          
+          @g.resolve_offers
+          
+          assert_equal "Cocoa", @player1.offer.card_type
+          assert_equal 3, @player1.offer.count
+          assert_nil @player1.offer.trade_with
+        end
+    
+        should "delete the trade with if the remote player is not in the game" do
+          @player1.make_offer "Cocoa", 3
+          @player1.offer.trade_with="Sarah"
+          
+          @g.resolve_offers
+          
+          assert_equal "Cocoa", @player1.offer.card_type
+          assert_equal 3, @player1.offer.count
+          assert_nil @player1.offer.trade_with 
+        end
+        
+        should "resolve trades of players choose each other" do
+          @player1.make_offer "Platinum", 2
+          @player1.offer.trade_with=@player2.name
+          
+          @player2.make_offer "Oil", 2
+          @player2.offer.trade_with=@player1.name
+          
+          @g.resolve_offers
+          
+          assert_equal 0, @player1.hand.cards["Platinum"]
+          assert_equal 4, @player1.hand.cards["Oil"]
+          
+          assert_equal 4, @player2.hand.cards["Platinum"]
+          assert_equal 0, @player2.hand.cards["Oil"]
+          
+          assert_equal nil, @player1.offer
+          assert_equal nil, @player2.offer
+        end
+        
+        should "delete offers that do not match the hand" do 
+          @player1.make_offer "Gold", 2
+          @player1.offer.trade_with=@player2.name
+          
+          @player2.make_offer "Oil", 2
+          @player2.offer.trade_with=@player1.name
+          
+          @g.resolve_offers
+          
+          assert_equal 2, @player2.hand.cards["Platinum"]
+          assert_equal 2, @player2.hand.cards["Oil"]
+          
+          assert_equal nil, @player1.offer
+          assert @player2.offer
+        end
+        should "delete offers that do not match the hand for the second players" do 
+          @player1.make_offer "Platinum", 2
+          @player1.offer.trade_with=@player2.name
+          
+          @player2.make_offer "Gold", 2
+          @player2.offer.trade_with=@player1.name
+          
+          @g.resolve_offers
+          
+          assert_equal 2, @player1.hand.cards["Platinum"]
+          assert_equal 2, @player1.hand.cards["Oil"]
+          
+          assert @player1.offer
+          assert_equal nil, @player2.offer
+        end
+      end
     end
     context "player" do
       setup do 
-        @p = Player.new
+        @p = Player.new "benji"
       end
       should "be constructable" do 
         assert @p
@@ -70,11 +224,44 @@ class ModelTest < MiniTest::Spec
       should "have randomly assigned default names" do 
         assert Player::PLAYER_NAMES.any?{ |p| @p.name }
       end
+      
+      context "offers" do
+        should "not have an offer upon start" do
+          assert_nil @p.offer
+        end
+        
+        should "have one offer at a time" do 
+          @p.make_offer "Cocoa", 3
+          assert @p.offer
+          assert_equal "Cocoa", @p.offer.card_type
+          assert_equal 3, @p.offer.count 
+          
+          @p.make_offer "Rice", 2
+          assert @p.offer
+          assert_equal "Rice", @p.offer.card_type
+          assert_equal 2, @p.offer.count 
+        end
+        
+        should "make offers" do
+          offer = @p.make_offer "Cocoa", 3
+          assert offer
+          assert_equal "Cocoa", offer.card_type
+          assert_equal 3, offer.count 
+        end
+        
+        should "be able to select player to trade with" do 
+          @p.make_offer "Cocoa", 3
+          @p.offer.trade_with="Benji"
+          assert_equal "Benji", @p.offer.trade_with
+        end
+        
+      end
     end
     
     context "hand" do 
       should "be empty upon construction" do
-        p = Player.new
+        p = Player.new "bob"
+        
         
         expected = {
           "Cocoa" => 0,
