@@ -24,10 +24,6 @@ class ModelTest < MiniTest::Spec
         assert_equal 1, @g.players.count
       end
       
-      should "have a json method" do
-        assert @g.to_hash
-      end
-      
       context "with players" do 
         setup do 
           @g = Game.new
@@ -161,77 +157,7 @@ class ModelTest < MiniTest::Spec
           assert_equal "lobby", @g.state
           assert_equal "Bilbo won the game!", @g.last_result
         end
-        
-        should "return the model state in json" do
-          @p1.make_offer "Platinum", 2
-          @p2.make_offer "Platinum", 2
-          @p2.offer.trade_with= @p1.name
-          @p3.make_offer "Cocoa", 1
-          expected = { 
-               "players" => [
-                { "player_name"=>"Bilbo", 
-                  "hand"=> {
-                    "Cocoa" => 4,
-                    "Platinum" => 2,
-                    "Gold" => 0,
-                    "Cattle" => 1,
-                    "Oil" => 2,
-                    "Rice" => 0,
-                    "Silver" => 0,
-                    "Gas" => 0,
-                   },
-                   "offer"=>{ "card_type" =>"Platinum", "count" =>2, "trade_with"=>nil }                     
-                }, 
-                { "player_name"=>"Frodo", 
-                  "hand"=> {
-                    "Cocoa" => 4,
-                    "Platinum" => 2,
-                    "Gold" => 0,
-                    "Cattle" => 1,
-                    "Oil" => 2,
-                    "Rice" => 0,
-                    "Silver" => 0,
-                    "Gas" => 0,
-                   },
-                   "offer"=>{ "card_type" => "Platinum", "count" =>2, "trade_with"=>"Bilbo" }                     
-                }, 
-                { "player_name"=>"Sam", 
-                  "hand"=> {
-                    "Cocoa" => 1,
-                    "Platinum" => 2,
-                    "Gold" => 0,
-                    "Cattle" => 6,
-                    "Oil" => 0,
-                    "Rice" => 0,
-                    "Silver" => 0,
-                    "Gas" => 0,
-                   },
-                   "offer"=>{ "card_type" => "Cocoa", "count" =>1, "trade_with"=>nil }                     
-                }, 
-                { "player_name"=>"Merry", 
-                  "hand"=> {
-                    "Cocoa" => 0,
-                    "Platinum" => 3,
-                    "Gold" => 0,
-                    "Cattle" => 1,
-                    "Oil" => 5,
-                    "Rice" => 0,
-                    "Silver" => 0,
-                    "Gas" => 0,
-                   },
-                   "offer"=>nil
-                }],
-                "recent_changes" => [
-                  { "type" => "Trade",
-                    "players" => ["Sam", "Merry"],
-                    "count" => 3
-                  }
-                ]
-              }
-              
-           assert_equal expected, @g.to_hash
-        end
-        
+                
         should "return the model state in json to players" do
           @p1.make_offer "Platinum", 2
           @p2.make_offer "Platinum", 2
@@ -263,7 +189,8 @@ class ModelTest < MiniTest::Spec
                    "offer"=>nil
                 }],
                 "state"=>"running",
-                "last_result"=>""
+                "last_result"=>"",
+                "sound_to_play"=>"audio/start.mp3"
               }
               
            assert_equal expected, @g.to_hash_for_player(@p1)

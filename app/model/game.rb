@@ -54,6 +54,7 @@ class Game
     @players = @players.reject{ |player| player.socket == socket }
     @last_result = "aborted because #{player_to_remove.name} exited"
     @state = "lobby"
+    @player_names = [ player_to_remove.name, @player_names ].flatten
   end
   
   def resolve_offers
