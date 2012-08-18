@@ -30,4 +30,11 @@ class Player
     @offer=Offer.new card_type, count  
   end
   
+  def to_hash
+    { "player_name"=>name,
+      "offer"=> (offer && offer.to_hash),
+      "hand"=>hand.to_hash
+    }
+  end
+  
 end

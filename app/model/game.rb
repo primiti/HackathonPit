@@ -65,60 +65,8 @@ class Game
   end
   
   def to_json
-    { "players" => [
-      { "player_name"=>"Bilbo", 
-        "hand"=> {
-          "Cocoa" => 4,
-          "Platinum" => 2,
-          "Gold" => 0,
-          "Cattle" => 1,
-          "Oil" => 2,
-          "Rice" => 0,
-          "Silver" => 0,
-          "Gas" => 0,
-         },
-         "offer"=>{ "Platnum"=>2 }                     
-      }, 
-      { "player_name"=>"Frodo", 
-        "hand"=> {
-          "Cocoa" => 4,
-          "Platinum" => 2,
-          "Gold" => 0,
-          "Cattle" => 1,
-          "Oil" => 2,
-          "Rice" => 0,
-          "Silver" => 0,
-          "Gas" => 0,
-         },
-         "offer"=>{ "Platnum"=>2, "trade_with"=>"Bilbo" }                     
-      }, 
-      { "player_name"=>"Sam", 
-        "hand"=> {
-          "Cocoa" => 1,
-          "Platinum" => 2,
-          "Gold" => 0,
-          "Cattle" => 6,
-          "Oil" => 0,
-          "Rice" => 0,
-          "Silver" => 0,
-          "Gas" => 0,
-         },
-         "offer"=>{ "Cocoa"=>1 }                     
-      }, 
-      { "player_name"=>"Merry", 
-        "hand"=> {
-          "Cocoa" => 0,
-          "Platinum" => 3,
-          "Gold" => 0,
-          "Cattle" => 1,
-          "Oil" => 5,
-          "Rice" => 0,
-          "Silver" => 0,
-          "Gas" => 0,
-         },
-         "offer"=>nil
-      }],
-      "recent_changes" => [
+    { "players" => (players && players.map{|p| p.to_hash}),
+     "recent_changes" => [
         { "type" => "Trade",
           "players" => ["Sam", "Merry"],
           "count" => 3

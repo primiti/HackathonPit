@@ -24,4 +24,8 @@ class Hand
     @cards[card_type] += 1
   end
   
+  def to_hash
+    cards
+  end
+  
 end
