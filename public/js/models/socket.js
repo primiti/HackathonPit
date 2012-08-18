@@ -23,6 +23,7 @@ var SocketWrapper = Backbone.Model.extend( {
           socket.onmessage = function( msg ) {
               try
               {
+                console.log('SOCKET ONMESSAGE');
                 var response = JSON.parse( msg.data );
               }
               catch( ex )

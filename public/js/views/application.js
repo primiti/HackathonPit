@@ -78,15 +78,23 @@ App.GameView = Backbone.View.extend({
   template: _.template($("#application-game").html()),
 
   initialize: function() {
+    this.model.game.bind( "change:state", this.changeState, this );
   },
 
   render: function() {
-    console.log( "render lobby view" );
+    console.log( "render game view" );
     $(this.el).html( this.template( this.model ) );
     this.boardView = new App.BoardView({ model : this.model, el : this.$('#board') });
     this.boardView.render();
-
     return this;
+  },
+
+  changeState: function() {
+    console.log('CHANGESTATE');
+    console.log( this.model.game.get('state'));
+    if( this.model.game.get('state') == 'running' ) {
+      window.location.hash='game'
+    }
   }
 
 });
