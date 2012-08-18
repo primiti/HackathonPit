@@ -34,12 +34,21 @@ class Game
     @last_result = ""
   end
   
-  def ring_bell_from_socket socket
+  def ring_bell_for_socket socket
+    player = find_player_for_socket socket
     
+    if player.hand.cards.any? { |card_type,card_count|  card_count == 9 }
+      @state = "lobby"  
+      @last_result = "#{player.name} won the game!"      
+    end  
+  end
+  
+  def find_player_for_socket socket
+    @players.select{ |player| player.socket == socket }.first
   end
   
   def remove_player_for_socket socket
-    player_to_remove = @players.select{ |player| player.socket == socket }.first
+    player_to_remove = find_player_for_socket socket
     @players = @players.reject{ |player| player.socket == socket }
     @last_result = "aborted because #{player_to_remove.name} exited"
     @state = "lobby"

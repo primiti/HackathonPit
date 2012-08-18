@@ -47,7 +47,19 @@ EventMachine.run do
       case command 
       when "start"
         @game.start
+      when "ring_bell"
+        @game.ring_bell_for_socket socket
+      when "make_offer"
+        player = @game.find_player_for_socket socket
+        player.make_offer args[0], args[1].to_i
+      when "trade_with"
+        player = @game.find_player_for_socket socket
+        if player.offer
+          player.offer.trade_with = args[0]
+        end          
       end
+      
+      @game.resolve_offers
       
       # Sends to every other player.
       @game.send_updates

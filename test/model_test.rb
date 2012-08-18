@@ -75,16 +75,18 @@ class ModelTest < MiniTest::Spec
             assert_equal player.name, @g.find_player(player.name).name
           end
         end
+        
+        
       end  
       
       context "resolving offers" do
         setup do 
           @g = Game.new
           
-          @p1 = @g.add_player "socket"
-          @p2 = @g.add_player "socket"
-          @p3 = @g.add_player "socket"
-          @p4 = @g.add_player "socket"
+          @p1 = @g.add_player "socket1"
+          @p2 = @g.add_player "socket2"
+          @p3 = @g.add_player "socket3"
+          @p4 = @g.add_player "socket4"
           @g.start
           
           @player1 = @g.players[0]
@@ -135,6 +137,29 @@ class ModelTest < MiniTest::Spec
                 "Silver" => 0,
                 "Gas" => 0,
                }
+        end
+        
+        should "ignore bell rings when the player is not ready" do 
+          @g.ring_bell_for_socket "socket1"
+          assert_equal "running", @g.state
+        end
+        
+        should "allow the a player to ring the bell" do 
+          @p1.hand.cards = {
+                "Cocoa" => 9,
+                "Platinum" => 0,
+                "Gold" => 0,
+                "Cattle" => 0,
+                "Oil" => 0,
+                "Rice" => 0,
+                "Silver" => 0,
+                "Gas" => 0,
+               } 
+              
+          assert_equal "running", @g.state
+          @g.ring_bell_for_socket "socket1"
+          assert_equal "lobby", @g.state
+          assert_equal "Bilbo won the game!", @g.last_result
         end
         
         should "return the model state in json" do
