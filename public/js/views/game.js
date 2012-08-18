@@ -43,11 +43,8 @@ App.SoundPlayerView = Backbone.View.extend({
     this.model.bind( "change:sound_to_play", this.render, this );
   },
   render: function() {
-    console.log( "render sound view" );
-    console.log( this.model );
-
     $(this.el).html( this.template( this.model.toJSON() ) );
-	$('#game_audio_target').get(0).play();
+  	$('#game_audio_target').get(0).play();
 
     return this;
   },
@@ -144,7 +141,15 @@ App.OtherPlayerView = Backbone.View.extend({
   },
 
   render: function() {
-    $(this.el).html( this.template( this.model.toJSON() ) );
+    var player = app.model.this_player;
+    var model_data = this.model.toJSON();
+    var trade_with_me = (player && (player.get('name') == this.model.get('trade_with')));
+    jQuery.extend(model_data, { 'trade_with_me' : trade_with_me })
+
+    $(this.el).html( this.template(model_data) );
+    if( trade_with_me ) {
+      this.$el.children('.other_player').addClass('active_offer');
+    }
 
     return this;
   },
@@ -154,8 +159,6 @@ App.OtherPlayerView = Backbone.View.extend({
   },
 
   choose: function() {
-	  console.log( "choose" )
-	  console.log( this.model )
 	  client.sendMessage( "trade_with " + this.model.attributes.name );
 //      this.model.get( 'hand' ).set( 'trade_with', this.model.get( 'name' ) );
   }
@@ -172,7 +175,6 @@ App.TradeListView = Backbone.View.extend({
 
   render: function() {
     _.each( this.trades, function( trade ) {
-      console.log( trade );
 
       // construct each tradeView
     } );
@@ -192,11 +194,10 @@ App.HandView = Backbone.View.extend({
   commodity_changed: function() {
       this.refresh();
   },
-  
+
   refresh: function() {
     // walk each div
-    console.log( "IN REFRESH" );
-    
+
     // animate show/hide OR animate change of number
     _.each( this.model.attributes.cards, function ( value, key ) {
       var card_container = jQuery( "#card_" + key );
@@ -208,9 +209,6 @@ App.HandView = Backbone.View.extend({
 
   render: function() {
 
-    console.log( "IN RENDER" );
-
-    
     $(this.el).html( this.template( this.model ) );
 
     _.each( this.model.attributes.cards, function ( value, key ) {
@@ -234,18 +232,18 @@ App.CardView = Backbone.View.extend({
   events: {
     "click .card": "choose"
   },
-  
+
   refresh: function() {
     if ( old_cards = this.model.get( 'hand' ).previousAttributes().cards )
     {
       var old_count = old_cards[ this.model.get( 'commodity' ) ];
       var new_count = this.model.get( 'count' );
-      
+
       if ( old_count != new_count )
       {
         $(this.el).find( 'h2' ).text( new_count );
-        
-        
+
+
         if ( this.model.get( 'count') > 0 )
         {
           this.$el.fadeIn( );
@@ -254,9 +252,9 @@ App.CardView = Backbone.View.extend({
         {
           this.$el.hide( );
         }
-        
+
         this.$el.find( '.card' ).effect("highlight", { }, 2000);
-        
+
       }
       else
       {
@@ -264,13 +262,13 @@ App.CardView = Backbone.View.extend({
       }
     }
 
-    this.$el.find( '.card' ).toggleClass( 'selected', this.model.get( 'chosen') );    
+    this.$el.find( '.card' ).toggleClass( 'selected', this.model.get( 'chosen') );
   },
-  
+
   render: function() {
     $(this.el).html( this.template( this.model.toJSON() ) );
     this.refresh();
-    
+
     return this;
   },
 
@@ -295,15 +293,11 @@ App.OfferCountView = Backbone.View.extend({
   },
 
   render: function() {
-    console.log("COUNT MODEL");
-    console.log(this.model);
     var number_template = _.template($("#application-game-offer-count-number").html());
     $(this.el).html( this.template( this.model ) );
 
     var commodity   = this.model.get( 'chosen_commodity' );
     var max_number  = '';
-    console.log(commodity);
-    console.log(max_number);
 
     if ( commodity && ( cards = this.model.get( 'cards' ) ) )
     {
@@ -344,17 +338,13 @@ App.Hand = Backbone.Model.extend({
   make_offer: function() {
     var commodity = this.get( 'chosen_commodity' );
     var count     = this.get( 'chosen_offer_count' );
-    console.log("MAKE OFFER");
-    console.log(this);
-    console.log(count);
-    console.log(this.get( 'cards' )[commodity]);
     if( count <= this.get( 'cards' )[commodity] ) {
       client.sendMessage( 'make_offer ' + commodity + ' ' + count );
     }
     else {
       console.log('cannot make this trade');
     }
-    
+
     this.set( { 'chosen_commodity' : null, 'chosen_offer_count' : 0 } );
   }
 });

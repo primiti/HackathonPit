@@ -212,29 +212,26 @@ $(window).unload( function() {
 	  <audio id="game_audio_target">
 	  <source src="<%= sound_to_play %>" type="audio/mpeg"  autoplay>
 	  </source>
-	  your browser doesn't support HTML5 audio      
+	  your browser doesn't support HTML5 audio
 	</audio>
 	 </script>
 
     <script type="text/html" id="application-other-players">
      <h3>Other Players</3>
     </script>
-    
+
     <script type="text/html" id="application-other-player">
 	    <div class="other_player <%= offer_count > 0 ? 'has_offer' : '' %>">
 	      <h1><%= name %></h1>
-	      
-	      <p>
+
 	      <% if ( offer_count == 0 ) { %>
 	        <i>no offers</i>
 	      <% } else { %>
-	        <i>offering:</i>
 	        <h2><%= offer_count %> cards</h2>
 	        <% if ( trade_with ) { %>
-	          offering to <b><%= trade_with %></b>
+	          offering to <b><%= trade_with_me ? "me" : trade_with %></b>
 	        <% } %>
 	      <% } %>
-	      </p>
 	    </div>
     </script>
 
@@ -243,7 +240,7 @@ $(window).unload( function() {
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-    
+
     <script src="js/bootstrap.js"></script>
     <script src="js/backbone.js"></script>
     <script src="js/models/socket.js"></script>

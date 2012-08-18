@@ -1,19 +1,15 @@
 body {
-     padding-top: 60px;
-    padding-bottom: 40px;
-  }
-  .sidebar-nav {
-    padding: 9px 0;
-  }
-  .selected {
-    font-weight: bold;
-    text-decoration: underline;
-  }
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+.sidebar-nav {
+  padding: 9px 0;
+}
 
 .hand {
   margin-top: 2em;
 }
- 
+
 .card {
     float: left;
     cursor: pointer;
@@ -26,11 +22,11 @@ body {
     text-align: center;
     min-width: 100px;
     width: 20%;
-    
+
     &:hover {
       background-color: #c7e6ff;
     };
-    
+
     h1 {
         font-size: 1.5em;
         font-weight: normal;
@@ -39,9 +35,12 @@ body {
     h2 {
         font-size: 1.7em;
     }
+  &.selected {
+    background-color: #FEEBB2;
+  }
 }
 
- @media (max-width: 480px) {  
+ @media (max-width: 480px) {
    .card {
      min-width: 30px;
      padding: .5em;;
@@ -69,20 +68,24 @@ $this_player_bg : #fedeb4;
   &:first-child {
     margin-left: 0em;
   };
-  
+
   &.has_offer {
     background-color: darken( $player_bg, 10% );
     border: 1px solid darken( $player_bg, 15% );
   }
-  
+
   &.active_offer {
     background-color: $player_active_bg;
     border: 1px solid darken( $player_active_bg, 10% );
   }
 
-  h1 { 
+  h1 {
     margin-top: .1em;
     font-size: 1.3em;
+  }
+
+  h2 {
+    font-size: 1.5em;
   }
 }
 

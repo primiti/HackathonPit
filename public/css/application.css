@@ -5,10 +5,6 @@ body {
 .sidebar-nav {
   padding: 9px 0; }
 
-.selected {
-  font-weight: bold;
-  text-decoration: underline; }
-
 .hand {
   margin-top: 2em; }
 
@@ -31,6 +27,8 @@ body {
     font-weight: normal; }
   .card h2 {
     font-size: 1.7em; }
+  .card.selected {
+    background-color: #FEEBB2; }
 
 @media (max-width: 480px) {
   .card {
@@ -59,6 +57,8 @@ body {
   .other_player h1 {
     margin-top: .1em;
     font-size: 1.3em; }
+  .other_player h2 {
+    font-size: 1.5em; }
 
 .this-player-container {
   float: left;
