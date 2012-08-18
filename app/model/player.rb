@@ -20,10 +20,11 @@ class Player
   ]
     
 
-  attr_accessor :hand, :name, :offer
-  def initialize name
+  attr_accessor :hand, :name, :offer, :socket
+  def initialize name, socket
     @hand = Hand.new
     @name = name
+    @socket = socket 
   end
   
   def make_offer card_type, count
@@ -35,6 +36,12 @@ class Player
       "offer"=> (offer && offer.to_hash),
       "hand"=>hand.to_hash
     }
-  end
+  end  
   
+  def to_summary_hash
+    { "player_name"=>name,
+      "offer"=> (offer && offer.to_hash)
+    }    
+  end
+
 end

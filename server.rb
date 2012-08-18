@@ -24,23 +24,29 @@ class ServerApp < Sinatra::Base
     send_file File.join(settings.public_folder, 'index.html')
   end
 end
+Thin::Server.start ServerApp, '0.0.0.0', 4000
+
   
 EventMachine.run do
   EventMachine::WebSocket.start(:host => '0.0.0.0', :port => 8080) do |socket|
     socket.onopen do
-      @sockets << socket
-      @sockets.each{ |s| s.send( { :type => :Connect, :data => "#{@sockets.size} clients connected"}.to_json ) }
+      @game.add_player socket
+      @game.send_updates
     end
     
     socket.onmessage do |mess|
-      @sockets.each{ |s| next if s == socket; s.send( { :type => :Message, :data => mess }.to_json ) }
-      @sockets.each{ |s| next if s == socket; s.send( { :type => :Game, :data => @game }.to_json ) }
+      # Process message
+      
+      # Sends to every other player.
+      @game.send_updates
     end
+    
     socket.onclose do
-      @sockets.delete socket
-      @sockets.each{ |s| s.send( { :type => :Connect, :data => "#{@sockets.size} clients connected"}.to_json ) }
+      @game.remove_player socket
+      
+      # Sends to every other player.
+      @game.send_updates
     end
   end
 
-  Thin::Server.start ServerApp, '0.0.0.0', 4000
 end

@@ -3,10 +3,10 @@ require 'json'
 
 class Game
   attr_accessor :players
-  def add_player
+  def add_player socket
     @player_names ||= Player::PLAYER_NAMES.dup.shuffle
     @players ||= []
-    p = Player.new @player_names.pop
+    p = Player.new @player_names.pop, socket
     @players << p
     p
   end
@@ -64,15 +64,26 @@ class Game
     @players.select{ |p| p.name == name }.first
   end
   
-  def to_json
+  def to_hash
     { "players" => (players && players.map{|p| p.to_hash}),
-     "recent_changes" => [
+      "recent_changes" => [
         { "type" => "Trade",
           "players" => ["Sam", "Merry"],
           "count" => 3
         }
       ]
-    }.to_json
+    }
+  end
+
+  def send_updates
+    players.each { |player| player.socket.send( @game.to_hash_for_player(player).to_json ) }
+  end
+
+  def to_hash_for_player this_player
+    { 
+      "this_player" => this_player.to_hash,
+      "other_players" => players.select{|p| p != this_player}.map{|p| p.to_summary_hash}
+    }
   end
 
 end

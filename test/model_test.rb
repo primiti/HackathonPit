@@ -19,22 +19,22 @@ class ModelTest < MiniTest::Spec
       end
       
       should "be able to add players to games" do
-        p = @g.add_player
+        p = @g.add_player "socket"
         assert p
         assert_equal 1, @g.players.count
       end
       
       should "have a json method" do
-        assert @g.to_json
+        assert @g.to_hash
       end
       
       context "with players" do 
         setup do 
           @g = Game.new
-          @p1 = @g.add_player
-          @p2 = @g.add_player
-          @p3 = @g.add_player
-          @p4 = @g.add_player                  
+          @p1 = @g.add_player "socket"
+          @p2 = @g.add_player "socket"
+          @p3 = @g.add_player "socket"
+          @p4 = @g.add_player "socket"         
         end
         should "have a start game method that adds 9 cards to each player" do 
           @g.start
@@ -53,7 +53,7 @@ class ModelTest < MiniTest::Spec
           assert_equal (Hand::CARD_NAMES.size-4), card_counts.values.select{ |v| v == 0 }.count                    
         end
         should "not have duplicate player names" do
-          5.times { @g.add_player }
+          5.times { @g.add_player "socket" }
           uniq_names = @g.players.map{|p| p.name }.sort.uniq 
           assert_equal @g.players.count, uniq_names.count
         end
@@ -68,10 +68,10 @@ class ModelTest < MiniTest::Spec
       context "resolving offers" do
         setup do 
           @g = Game.new
-          @p1 = @g.add_player
-          @p2 = @g.add_player
-          @p3 = @g.add_player
-          @p4 = @g.add_player
+          @p1 = @g.add_player "socket"
+          @p2 = @g.add_player "socket"
+          @p3 = @g.add_player "socket"
+          @p4 = @g.add_player "socket"
           
           @player1 = @g.players[0]
           @player2 = @g.players[1]
@@ -111,7 +111,7 @@ class ModelTest < MiniTest::Spec
                 "Gas" => 0,
                }
           @p4.name = "Merry"
-          @p4.hand.cards = {
+                @p4.hand.cards = {
                 "Cocoa" => 0,
                 "Platinum" => 3,
                 "Gold" => 0,
@@ -190,8 +190,44 @@ class ModelTest < MiniTest::Spec
                 ]
               }
               
-           assert_equal expected.to_json, @g.to_json
+           assert_equal expected, @g.to_hash
         end
+        
+        should "return the model state in json to players" do
+          @p1.make_offer "Platinum", 2
+          @p2.make_offer "Platinum", 2
+          @p2.offer.trade_with= @p1.name
+          @p3.make_offer "Cocoa", 1
+          expected = { 
+            "this_player"=>
+            { "player_name"=>"Bilbo", 
+              "hand"=> {
+                "Cocoa" => 4,
+                "Platinum" => 2,
+                "Gold" => 0,
+                "Cattle" => 1,
+                "Oil" => 2,
+                "Rice" => 0,
+                "Silver" => 0,
+                "Gas" => 0,
+               },
+               "offer"=>{ "card_type" =>"Platinum", "count" =>2, "trade_with"=>nil }                     
+             },
+               "other_players" => [
+                { "player_name"=>"Frodo", 
+                   "offer"=>{ "card_type" => "Platinum", "count" =>2, "trade_with"=>"Bilbo" }                     
+                }, 
+                { "player_name"=>"Sam", 
+                   "offer"=>{ "card_type" => "Cocoa", "count" =>1, "trade_with"=>nil }                     
+                }, 
+                { "player_name"=>"Merry", 
+                   "offer"=>nil
+                }],
+              }
+              
+           assert_equal expected, @g.to_hash_for_player(@p1)
+        end
+        
         should "delete offers that are not equal size" do
           @player1.make_offer "Cocoa", 3
           @player1.offer.trade_with=@player2.name
@@ -281,7 +317,7 @@ class ModelTest < MiniTest::Spec
     end
     context "player" do
       setup do 
-        @p = Player.new "benji"
+        @p = Player.new "benji", "socket"
       end
       should "be constructable" do 
         assert @p
@@ -330,7 +366,7 @@ class ModelTest < MiniTest::Spec
     
     context "hand" do 
       should "be empty upon construction" do
-        p = Player.new "bob"
+        p = Player.new "bob", "socket"
         
         
         expected = {
