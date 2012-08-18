@@ -184,6 +184,8 @@ $(window).unload( function() {
     </script>
 
     <script type="text/html" id="application-game-hand">
+      <div class="clear_left"></div>
+      <h3 class="hand">My Hand</3>
     </script>
 
     <script type="text/html" id="application-game-card">
@@ -202,14 +204,25 @@ $(window).unload( function() {
 	 </script>
 
     <script type="text/html" id="application-other-players">
-    </br>
+     <h3>Other Players</3>
     </script>
+    
     <script type="text/html" id="application-other-player">
 	    <div class="other_player">
-	      <%= name %> offers <%= offer_count %> cards.  ( wants to trade with <%= trade_with %>)
-		  <br>
+	      <h1><%= name %></h1>
+	      
+	      <p>
+	      <% if ( offer_count == 0 ) { %>
+	        <i>no offers</i>
+	      <% } else { %>
+	        <i>offering:</i>
+	        <h2><%= offer_count %> cards</h2>
+	        <% if ( trade_with ) { %>
+	          offering to <b><%= trade_with %></b>
+	        <% } %>
+	      <% } %>
+	      </p>
 	    </div>
-	    </br>
     </script>
 
 
