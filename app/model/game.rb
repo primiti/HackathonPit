@@ -25,7 +25,7 @@ class Game
   end
   
   def to_json
-    [
+    { "players" => [
       { "player_name"=>"Bilbo", 
         "hand"=> {
           "Cocoa" => 4,
@@ -77,8 +77,14 @@ class Game
           "Gas" => 0,
          },
          "offer"=>nil
-      }
-    ].to_json
+      }],
+      "recent_changes" => [
+        { "type" => "Trade",
+          "players" => ["Sam", "Merry"],
+          "count" => 3
+        }
+      ]
+    }.to_json
   end
 
 end
