@@ -76,11 +76,8 @@ App.Card = Backbone.Model.extend({
 App.CardView = Backbone.View.extend({
   template: _.template($("#application-game-card").html()),
 
-  events: {
-    "click .card": "choose"
-  },
-
   initialize : function() {
+    this.chosen = false;
   },
 
   render: function() {
@@ -91,8 +88,20 @@ App.CardView = Backbone.View.extend({
     return this;
   },
 
+  events: {
+    "click .card": "choose"
+  },
+
   choose: function() {
-    console.log('click');
+    if( this.chosen ){
+      this.chosen = false;
+      this.$el.children('.card').removeClass('selected');
+    }
+    else{
+      this.chosen = true;
+      $('.card').removeClass('selected');
+      this.$el.children('.card').addClass('selected');
+    }
   }
 });
 
@@ -113,5 +122,8 @@ App.OfferCountView = Backbone.View.extend({
     }, this );
 
     return this;
-  }
+  },
+
+  clean_count: function() {},
+  restrict_count: function() {}
 });
