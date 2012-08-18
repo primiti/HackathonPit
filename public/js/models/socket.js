@@ -53,7 +53,7 @@ var SocketWrapper = Backbone.Model.extend( {
         }
         else
         {
-          log_error( "Socket disconnected. Could not send: '" + message + "'")
+          console.log( "Socket disconnected. Could not send: '" + message + "'")
         }
       },
       

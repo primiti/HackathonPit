@@ -241,8 +241,17 @@ App.OfferCountView = Backbone.View.extend({
     $(this.el).html( this.template( this.model ) );
 
     var commodity   = this.model.get( 'chosen_commodity' );
-    var max_number  = this.model.get( 'cards' )[commodity];
-        
+    var max_number  = '';
+
+    if ( cards = this.model.get( 'cards' ) )
+    {
+      max_number = cards[commodity];
+    }
+    else
+    {
+      max_number = 0;
+    }
+
     _.each( [1, 2, 3, 4], function ( number ) {
       this.$el.children('.btn-group').append( number_template( { "number" : number, "max_number" : max_number } ) );
     }, this );

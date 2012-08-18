@@ -48,39 +48,17 @@ function setup()
     app = new App.MainView({ el: $("#application") });
 
     app.model = {
-		hand : new App.Hand( {
-	       cards : {
-	          "Cocoa" : 4,
-	          "Platinum" : 2,
-	          "Gold" : 0,
-	          "Cattle" : 1,
-	          "Oil" : 2,
-	          "Rice" : 0,
-	          "Silver" : 0,
-	          "Gas" : 0
-	        } } ),
- 		other_players : new App.OtherPlayers(  {
-			player_list: [
-		        { "player_name" : "Frodo",
-		           "offer" : { "card_type" : "Platinum", "count" : 2, "trade_with" : "Bilbo" }
-		        },
-		        { "player_name" : "Sam",
-		           "offer" : { "card_type" : "Cocoa", "count" : 1, "trade_with" : null }
-		        },
-		        { "player_name" : "Merry",
-		           "offer" : null
-		        }
-			] } ),
-		this_player : new App.ThisPlayer( { "name" : "Bilbo" } ),
-		game : new App.Game( { "state" : "lobby" } ),
-		sound : new App.Sound( { "sound_to_play" : null })
-	};
+      hand : new App.Hand( {} ),
+      other_players : new App.OtherPlayers( {} ),
+      this_player : new App.ThisPlayer( {} ),
+      game : new App.Game( { "state" : "lobby" } ),
+      sound : new App.Sound( { "sound_to_play" : null })
+    };
 
     app.render();
 
     var router = new App.Router();
     Backbone.history.start();
-//    Backbone.history.start({pushState : true});
 
     client = new App.Client();
 };
