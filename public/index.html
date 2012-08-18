@@ -7,19 +7,7 @@
 
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-      .selected {
-        font-weight: bold;
-        text-decoration: underline;
-      }
-    </style>
+    <link href="css/application.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
 
@@ -98,6 +86,7 @@ function setup()
 
   socket_wrapper = new SocketWrapper( { host : 'localhost', port : 8080 } );
   socket_wrapper.connect();
+  
 };
 
 
@@ -151,7 +140,7 @@ $(window).unload( function() {
 
       <footer>
         <p>&copy; 2012 Team Irish.  Created at RingRevenue Hackathon 2012.</p>
-        <textarea onkeyup="sendIfEnter(this, event)" rows=3 col=30></textarea>
+        <textarea onkeyup="sendIfEnter(this, event)" rows=3 col=30>start</textarea>
       </footer>
 
     </div><!--/.fluid-container-->
@@ -170,13 +159,25 @@ $(window).unload( function() {
     <script type="text/html" id="application-game">
       <div id='board'></div>
     </script>
+    
+    <script type="text/html" id="application-game-controls">
+      <div class="game-controls">
+        <% if ( state == 'running' ) { %>
+          <a class="btn btn-primary"><i class="icon-bell icon-white"></i> Ring bell</a>
+        <% } else { %>
+          <a class="btn btn-primary"><i class="icon-star-empty icon-white"></i> Start</a>
+        <% } %>
+      </div>
+    </script>
 
     <script type="text/html" id="application-game-board">
       <div id='game-state'></div>
+      <div id='controls'></div>
       <div id='trade-list'></div>
       <div id='this-player'></div>	  
       <div id='other-players'></div>	  
       <div id='hand'></div>
+      <div class='clear_left'></div>
       <div id='offer-count'></div>
     </script>
 
@@ -192,6 +193,7 @@ $(window).unload( function() {
     </script>
 
     <script type="text/html" id="application-game-offer-count">
+    <div class="btn-group"></div>
     </script>
 
 	<script type="text/html" id="application-this-player">
@@ -202,16 +204,16 @@ $(window).unload( function() {
 	</script>
 
     <script type="text/html" id="application-game-offer-count-number">
-      <div><%= number %></div>
+      <button class="btn <%= number > max_number ? 'disabled' : '' %>"><%= number %></button>
     </script>
 
     <script type="text/html" id="application-game-hand">
     </script>
 
     <script type="text/html" id="application-game-card">
-      <div class="card">
-        <%= commodity %>
-        <%= count %>
+      <div class="card <%= chosen ? 'selected' : '' %>" style="<%= count == 0 ? 'display:none' : '' %>">
+        <h1><%= commodity %></h1>
+        <h2><%= count %></h2>
       </div>
     </script>
     <script type="text/html" id="application-game-state">

@@ -8,6 +8,7 @@ App.BoardView = Backbone.View.extend({
     console.log( "render board view" );
     $(this.el).html( this.template( this.model ) );
 
+    this.gameControls  = new App.GameControlsView( { model: this.model, el: this.$('#controls') } );
     this.tradeList     = new App.TradeListView( { model : this.model, el: this.$('#trade-list') } );
     this.hand          = new App.HandView( { model : this.model.hand, el: this.$('#hand') } );
     this.offerCount    = new App.OfferCountView( { model : this.model.hand, el: this.$('#offer-count') } );
@@ -15,6 +16,7 @@ App.BoardView = Backbone.View.extend({
     this.this_player   = new App.ThisPlayerView( { model : this.model.this_player, el: this.$('#this-player') } );
     this.game_state    = new App.GameStateView( { model : this.model.game, el: this.$('#game-state') } );
 
+    this.gameControls.render();
     this.tradeList.render();
     this.hand.render();
     this.offerCount.render();
@@ -46,7 +48,6 @@ App.GameStateView = Backbone.View.extend({
 });
 
 
-
 App.ThisPlayerView = Backbone.View.extend({
   template: _.template($("#application-this-player").html()),
 
@@ -61,6 +62,21 @@ App.ThisPlayerView = Backbone.View.extend({
 
     return this;
   },
+});
+
+
+App.GameControlsView = Backbone.View.extend({
+  template: _.template($("#application-game-controls").html()),
+
+  initialize: function() {
+  },
+
+  render: function() {
+      // TODO - wire this to bob's model
+    $(this.el).html( this.template( { state : 'lobby' } ) );
+
+    return this;
+  }
 });
 
 
@@ -161,20 +177,21 @@ App.HandView = Backbone.View.extend({
 
   initialize : function() {
     this.model.bind( "change:cards", this.render, this );
+    this.model.bind( "change:chosen_commodity", this.commodity_changed, this );
+  },
+    
+  commodity_changed: function() {
+      this.render();
   },
 
   render: function() {
-    console.log( "render hand view" );
 
     $(this.el).html( this.template( this.model ) );
-    console.log( this.model );
-    console.log( "model above, cards below" );
-    console.log( this.model.attributes.cards );
 
     _.each( this.model.attributes.cards, function ( value, key ) {
       var card_container = jQuery( "<div></div>" );
       this.$el.append( card_container );
-      var card = new App.CardView( { model : new App.Card({ 'commodity' : key, 'count' : value }), el : card_container } );
+      var card = new App.CardView( { model : new App.Card({ 'hand' : this.model, 'commodity' : key, 'count' : value, 'chosen' : this.model.get( 'chosen_commodity' ) == key }), el : card_container } );
       card.render();
     }, this );
 
@@ -182,44 +199,25 @@ App.HandView = Backbone.View.extend({
   }
 });
 
-App.Game = Backbone.Model.extend({});
-App.Hand = Backbone.Model.extend({});
-App.Card = Backbone.Model.extend({});
-App.OtherPlayers = Backbone.Model.extend({});
-App.OtherPlayer = Backbone.Model.extend({});
-App.ThisPlayer = Backbone.Model.extend({});
-
-
 
 App.CardView = Backbone.View.extend({
   template: _.template($("#application-game-card").html()),
 
   initialize : function() {
-    this.chosen = false;
+  },
+  
+  events: {
+    "click .card": "choose"
   },
 
   render: function() {
-    console.log( "render card view" );
-
     $(this.el).html( this.template( this.model.toJSON() ) );
 
     return this;
   },
 
-  events: {
-    "click .card": "choose"
-  },
-
   choose: function() {
-    if( this.chosen ){
-      this.chosen = false;
-      this.$el.children('.card').removeClass('selected');
-    }
-    else{
-      this.chosen = true;
-      $('.card').removeClass('selected');
-      this.$el.children('.card').addClass('selected');
-    }
+    this.model.get( 'hand' ).set( 'chosen_commodity', this.model.get( 'commodity' ) );
   }
 });
 
@@ -227,16 +225,26 @@ App.OfferCountView = Backbone.View.extend({
   template: _.template($("#application-game-offer-count").html()),
 
   initialize : function() {
+    this.model.bind( "change:chosen_commodity", this.render, this );
+  },
+  
+  events: {
+    "click .btn": "choose"
+  },
+  
+  choose: function( evt ) {
+    this.model.set( { 'chosen_offer_count' : jQuery( evt.target ).text() } );
   },
 
   render: function() {
-    console.log( "render offer count view" );
-
     var number_template = _.template($("#application-game-offer-count-number").html());
     $(this.el).html( this.template( this.model ) );
 
+    var commodity   = this.model.get( 'chosen_commodity' );
+    var max_number  = this.model.get( 'cards' )[commodity];
+        
     _.each( [1, 2, 3, 4], function ( number ) {
-      this.$el.append( number_template( { "number" : number } ) );
+      this.$el.children('.btn-group').append( number_template( { "number" : number, "max_number" : max_number } ) );
     }, this );
 
     return this;
@@ -245,3 +253,28 @@ App.OfferCountView = Backbone.View.extend({
   clean_count: function() {},
   restrict_count: function() {}
 });
+
+
+
+/************************************
+   M O D E L S
+/************************************/
+App.Game = Backbone.Model.extend({});
+App.OtherPlayers = Backbone.Model.extend({});
+App.OtherPlayer = Backbone.Model.extend({});
+App.ThisPlayer = Backbone.Model.extend({});
+
+App.Hand = Backbone.Model.extend({
+  initialize : function() {
+    this.bind( "change:chosen_offer_count", this.make_offer, this );
+  },
+  
+  make_offer: function() {
+    // TODO!! this should go through socket wrapper and stuff
+    var message = 'make_offer ' + this.get( 'chosen_commodity' ) + ' ' + this.get( 'chosen_offer_count' );
+    console.log( "SOCKET MESSAGE: " + message );
+    socket.send( message );
+  }
+});
+
+App.Card = Backbone.Model.extend({});
