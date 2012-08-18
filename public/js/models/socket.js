@@ -29,6 +29,7 @@ var SocketWrapper = Backbone.Model.extend( {
 				app.model.other_players.set( { player_list: response.other_players } );
 				app.model.this_player.set( { name: response.this_player.player_name } );
 				app.model.game.set( { state: response.state } );
+				app.model.sound.set( { sound_to_play: response.sound_to_play } );
               }
               catch( ex )
               {

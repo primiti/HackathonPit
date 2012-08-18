@@ -4,7 +4,7 @@ require "app/model/offer"
 require 'json'
 
 class Game
-  attr_accessor :players, :state, :last_result
+  attr_accessor :players, :state, :last_result, :sound_to_play
   
   def initialize
     @state = "lobby"
@@ -32,6 +32,7 @@ class Game
     end
     @state = "running"  
     @last_result = ""
+    @sound_to_play = "audio/start.mp3"
   end
   
   def ring_bell_for_socket socket
@@ -40,6 +41,7 @@ class Game
     if player.hand.cards.any? { |card_type,card_count|  card_count == 9 }
       @state = "lobby"  
       @last_result = "#{player.name} won the game!"      
+      @sound_to_play = "audio/stop.mp3"
     end  
   end
   
@@ -86,6 +88,7 @@ class Game
             
         player.offer = nil
         remote_player.offer = nil
+        @sound_to_play = "audio/card_pass.mp3"
       end
     end
   end
@@ -94,16 +97,6 @@ class Game
     @players.select{ |p| p.name == name }.first
   end
   
-  def to_hash
-    { "players" => (players && players.map{|p| p.to_hash}),
-      "recent_changes" => [
-        { "type" => "Trade",
-          "players" => ["Sam", "Merry"],
-          "count" => 3
-        }
-      ]
-    }
-  end
 
   def send_updates
     players.each do |player| 
@@ -117,7 +110,8 @@ class Game
       "this_player" => this_player.to_hash,
       "other_players" => players.select{|p| p != this_player}.map{|p| p.to_summary_hash},
       "state" => state,
-      "last_result" => last_result
+      "last_result" => last_result,
+      "sound_to_play" => sound_to_play
     }
   end
 

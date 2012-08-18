@@ -74,7 +74,8 @@ function setup()
 		        }
 			] } ),
 		this_player : new App.ThisPlayer( { "name" : "Bilbo" } ),
-		game : new App.Game( { "state" : "running" } )
+		game : new App.Game( { "state" : "running" } ),
+		sound : new App.Sound( { "sound_to_play" : null })
 	};
 
     app.render();
@@ -179,6 +180,7 @@ $(window).unload( function() {
       <div id='hand'></div>
       <div class='clear_left'></div>
       <div id='offer-count'></div>
+      <div id='sounds'></div>	 
     </script>
 
     <script type="text/html" id="application-game-trade-list">
@@ -216,7 +218,19 @@ $(window).unload( function() {
         <h2><%= count %></h2>
       </div>
     </script>
-
+	
+    <script type="text/html" id="application-game-state">
+      <div class="game-state">
+        <%= state %>
+      </div>
+    </script>
+	
+    <script type="text/html" id="application-sounds">
+       <audio src="<%= sound_to_play %>" autoplay>
+                 <p>Your browser does not support the audio element </p>
+       </audio>
+	 </script>
+	
     <script type="text/html" id="application-other-players">
     </br>
     </script>
