@@ -324,7 +324,7 @@ App.OfferCountView = Backbone.View.extend({
 /************************************
    M O D E L S
 /************************************/
-App.Game = Backbone.Model.extend({});
+App.Game = Backbone.Model.extend({ defaults: {"last_result" : null}});
 App.OtherPlayers = Backbone.Model.extend({});
 App.OtherPlayer = Backbone.Model.extend({});
 App.ThisPlayer = Backbone.Model.extend({});
@@ -380,7 +380,7 @@ App.Client = Backbone.Model.extend({
 			 console.log( this_player_fixed );
 	app.model.this_player.set( { this_player :  this_player_fixed } ); 
 
-    app.model.game.set( { state: response.state } );
+    app.model.game.set( { state: response.state, last_result: response.last_result } );
     app.model.sound.set( { sound_to_play: response.sound_to_play } );
   },
 
