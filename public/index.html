@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Web Sockets Demo :: Burwell Designs</title>
+    <title>Pit :: Hackathon</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Le styles -->
@@ -25,6 +25,9 @@
     <![endif]-->
     
     <script type="text/javascript">
+
+    var app;    
+
   var socket_wrapper, socket_view;
 
 function sendIfEnter( textarea, evt )
@@ -38,6 +41,14 @@ function sendIfEnter( textarea, evt )
 
 function setup()
 {
+    app = new App.MainView({ el: $("#application") });
+    app.render();
+
+    var router = new App.Router();
+    Backbone.history.start();
+//    Backbone.history.start({pushState : true});
+
+
   if ( WebSocket ) {
     $('.if-web-sockets').show();
   }
@@ -84,13 +95,14 @@ $(window).unload( function() {
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">Web Sockets Demo</a>
+          <a class="brand" href="#">Pit. The Game. Realtime.</a>
           
           <div class="nav-collapse">
+            <!-- TODO : this should be a backbone view -->
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li class="lobby"><a href="/#">Lobby</a></li>
+              <li class="game"><a href="/#game">Game</a></li>
+              <li class="logout"><a href="/#logout">Logout</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -98,53 +110,29 @@ $(window).unload( function() {
     </div>
 
     <div class="container-fluid">
-      <div class="row-fluid">
-        <div class="span3">
-          <div class="well">
-            <h2>Server Connection</h2>
-            
-            <div class="alert alert-success if-web-sockets" style="display:none">
-              Your browser supports web sockets.
-            </div>
-            
-            <div class="alert alert-error no-web-sockets" style="display:none">
-              Sorry, your browser does not support web sockets. Please download Chrome or Firefox.
-            </div>
 
-            <p>Configured to connect to the following: <br />
-               <code>ws://localhost:8080</code>
-            </p>
-            
-            <p style="margin-top: 1.5em" id="connect">
-            </p>
-          </div>
-        </div>
-        
-        <div class="span9">
-          <div class="row-fluid">
-            <div class="span8">
-              <h2>Incoming messages</h2>
-              <div id="messages"></div>
-            </div><!--/span-->
-            
-            <div class="span4">
-              <h4 style="margin-top: 1em">Send a message:</h4>
-              <textarea onkeyup="sendIfEnter(this, event)" rows=3 col=30></textarea>
-            </div><!--/span-->
-          </div><!--/row-->
-          
-        </div><!--/span-->
-      </div><!--/row-->
-
+      <div id="application">
+        <div id="lobby" class="view"></div>
+        <div id="game"  class="view"></div>
+      </div>
+      
       <hr>
 
       <footer>
-        <p>&copy; 2012 Burwell Designs</p>
+        <p>&copy; 2012 Team Irish.  Created at RingRevenue Hackathon 2012.</p>
       </footer>
 
     </div><!--/.fluid-container-->
     
+    
     <!-- TEMPLATES -->
+    <script type="text/html" id="application-lobby">
+      LOBBY!
+    </script>
+    
+    <script type="text/html" id="application-game">
+      GAME!!
+    </script>
     
     <script type="text/html" id="template-socket-connection">
       <p>Status: <b><%= connected ? 'connected' : 'not connected' %></b></p>
@@ -163,12 +151,13 @@ $(window).unload( function() {
       <div></div>
     </script>
 
-    <!-- Le javascript
+    <!-- Javascript resources
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/bootstrap.js"></script>
     <script src="js/backbone.js"></script>
     <script src="js/models/socket.js"></script>
+    <script src="js/views/application.js"></script>
     <script src="js/views/socket.js"></script>
 
   </body>
