@@ -384,6 +384,7 @@ App.Client = Backbone.Model.extend({
 	         {
 	           this_player_fixed["offer_count"] = response.this_player.offer.count;
 	           this_player_fixed["trade_with"] = response.this_player.offer.trade_with;
+	           this_player_fixed["offer_card_type"] = response.this_player.offer.card_type;
 	         }
 			 console.log( "fixed player" );
 			 console.log( this_player_fixed );

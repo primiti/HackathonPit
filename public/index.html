@@ -180,7 +180,7 @@ $(window).unload( function() {
 	        <i>no offers</i>
 	      <% } else { %>
 	        <i>offering:</i>
-	        <h2><%= this_player.offer_count %> cards</h2>
+	        <h2><%= this_player.offer_count %> <%= this_player.offer_card_type %></h2>
 	        <% if ( this_player.trade_with ) { %>
 	          offering to <b><%= this_player.trade_with %></b>
 	        <% } %>
