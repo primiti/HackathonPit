@@ -58,10 +58,16 @@ App.ThisPlayerView = Backbone.View.extend({
   template: _.template($("#application-this-player").html()),
 
   initialize : function() {
-    this.model.bind( "change:name", this.render, this );
+    this.model.bind( "change:this_player", this.render, this );
   },
   render: function() {
-    $(this.el).html( this.template( this.model.toJSON() ) );
+	  console.log("this player view");
+	  console.log(this);
+	  console.log(this.model.toJSON());
+	  if ( !$.isEmptyObject(this.model.attributes) )
+	  {
+	      $(this.el).html( this.template( this.model.toJSON() ) );
+	  }
 
     return this;
   },
@@ -367,7 +373,22 @@ App.Client = Backbone.Model.extend({
   {
     app.model.hand.set( { cards: response.this_player.hand } );
     app.model.other_players.set( { player_list: response.other_players } );
-    app.model.this_player.set( { name: response.this_player.player_name } );
+	
+	console.log(response.this_player);
+	var this_player_fixed = {
+	      name : response.this_player.player_name,
+	      offer_count : 0,
+	      trade_with : null
+	       };
+	         if ( response.this_player.offer )
+	         {
+	           this_player_fixed["offer_count"] = response.this_player.offer.count;
+	           this_player_fixed["trade_with"] = response.this_player.offer.trade_with;
+	         }
+			 console.log( "fixed player" );
+			 console.log( this_player_fixed );
+	app.model.this_player.set( { this_player :  this_player_fixed } ); 
+
     app.model.game.set( { state: response.state } );
     app.model.sound.set( { sound_to_play: response.sound_to_play } );
   },

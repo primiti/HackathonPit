@@ -174,9 +174,21 @@ $(window).unload( function() {
 
 	<script type="text/html" id="application-this-player">
 	    <div class="this-player">
-	      <%= name %>
+	      <h1><%= this_player.name %></h1>	      
+	      <p>
+	      <% if ( this_player.offer_count == 0 ) { %>
+	        <i>no offers</i>
+	      <% } else { %>
+	        <i>offering:</i>
+	        <h2><%= this_player.offer_count %> cards</h2>
+	        <% if ( this_player.trade_with ) { %>
+	          offering to <b><%= this_player.trade_with %></b>
+	        <% } %>
+	      <% } %>
+	      </p>
+		  
 	    </div>
-
+		
 	</script>
 
     <script type="text/html" id="application-game-offer-count-number">
