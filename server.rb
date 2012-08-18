@@ -52,6 +52,7 @@ EventMachine.run do
       when "make_offer"
         player = @game.find_player_for_socket socket
         player.make_offer args[0], args[1].to_i
+        @game.sound_to_play = "audio/#{args[1]}.mp3"
       when "trade_with"
         player = @game.find_player_for_socket socket
         if player.offer
