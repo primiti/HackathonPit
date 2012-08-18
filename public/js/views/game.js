@@ -141,9 +141,9 @@ App.OtherPlayerView = Backbone.View.extend({
   },
 
   render: function() {
-    var player = app.model.this_player;
+    var player = app.model.this_player ? app.model.this_player.get('this_player') : null;
     var model_data = this.model.toJSON();
-    var trade_with_me = (player && (player.get('name') == this.model.get('trade_with')));
+    var trade_with_me = !!(player && player.name && (player.name == this.model.get('trade_with')));
     jQuery.extend(model_data, { 'trade_with_me' : trade_with_me })
 
     $(this.el).html( this.template(model_data) );
@@ -363,7 +363,7 @@ App.Client = Backbone.Model.extend({
   {
     app.model.hand.set( { cards: response.this_player.hand } );
     app.model.other_players.set( { player_list: response.other_players } );
-	
+
 	console.log(response.this_player);
 	var this_player_fixed = {
 	      name : response.this_player.player_name,
@@ -378,7 +378,7 @@ App.Client = Backbone.Model.extend({
 	         }
 			 console.log( "fixed player" );
 			 console.log( this_player_fixed );
-	app.model.this_player.set( { this_player :  this_player_fixed } ); 
+	app.model.this_player.set( { this_player :  this_player_fixed } );
 
     app.model.game.set( { state: response.state, last_result: response.last_result } );
     app.model.sound.set( { sound_to_play: response.sound_to_play } );
