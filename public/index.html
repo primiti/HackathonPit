@@ -71,7 +71,18 @@ function setup()
           "Rice" : 0,
           "Silver" : 0,
           "Gas" : 0
-        } })  };
+        } } ),
+ 		other_players : new App.OtherPlayers(  { player_list: [ 
+        { "player_name" : "Frodo", 
+           "offer" : { "card_type" : "Platinum", "count" : 2, "trade_with" : "Bilbo" }                     
+        }, 
+        { "player_name" : "Sam", 
+           "offer" : { "card_type" : "Cocoa", "count" : 1, "trade_with" : null }                     
+        }, 
+        { "player_name" : "Merry", 
+           "offer" : null
+        }] } )
+	};
 
     app.render();
 
@@ -157,6 +168,7 @@ $(window).unload( function() {
 
     <script type="text/html" id="application-game-board">
       <div id='trade-list'></div>
+      <div id='other-players'>will be replaced</div>	  
       <div id='hand'></div>
       <div id='offer-count'></div>
     </script>
@@ -188,6 +200,18 @@ $(window).unload( function() {
         <%= count %>
       </div>
     </script>
+
+    <script type="text/html" id="application-other-players">
+    </br>	
+    </script>
+    <script type="text/html" id="application-other-player">
+	    <div class="other_player">
+	      <%= name %> offers <%= offer_count %> cards.  ( wants to trade with <%= trade_with %>)
+		  <br>
+	    </div>
+	    </br>	
+    </script>
+
 
     <!-- Javascript resources
     ================================================== -->

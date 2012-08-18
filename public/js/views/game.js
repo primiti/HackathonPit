@@ -8,17 +8,90 @@ App.BoardView = Backbone.View.extend({
     console.log( "render board view" );
     $(this.el).html( this.template( this.model ) );
 
-    this.tradeList  = new App.TradeListView( { model : this.model, el: this.$('#trade-list') } );
-    this.hand       = new App.HandView( { model : this.model.hand, el: this.$('#hand') } );
-    this.offerCount = new App.OfferCountView( { model : this.model.hand, el: this.$('#offer-count') } );
+    this.tradeList     = new App.TradeListView( { model : this.model, el: this.$('#trade-list') } );
+    this.hand          = new App.HandView( { model : this.model.hand, el: this.$('#hand') } );
+    this.offerCount    = new App.OfferCountView( { model : this.model.hand, el: this.$('#offer-count') } );
+    this.other_players = new App.OtherPlayersView( { model : this.model.other_players, el: this.$('#other-players') } );
 
     this.tradeList.render();
     this.hand.render();
     this.offerCount.render();
+    this.other_players.render();
 
     return this;
   }
 });
+
+App.OtherPlayersView = Backbone.View.extend({
+  template: _.template($("#application-other-players").html()),
+
+  initialize : function() {
+    this.model.bind( "change:player_list", this.render, this );
+  },
+
+  render: function() {
+    console.log( "============================================================" );
+    console.log( "render other players view" );
+
+    $(this.el).html( this.template( this.model ) );
+    console.log( this.model );
+
+ 
+    _.each( this.model.attributes.player_list, function ( other_player ) {
+		console.log( other_player );
+      var other_player_container = jQuery( "<div></div>" );
+      this.$el.append( other_player_container );	  
+	  var other_player_fixed = {
+		  name : other_player.player_name,
+		  offer_count : 0,
+		  trade_with : null
+	  };
+	  
+	  if ( other_player.offer )
+	  {
+		  other_player_fixed["offer_count"] = other_player.offer.count;
+		  other_player_fixed["trade_with"] = other_player.offer.trade_with;
+	  }	  
+      var other_player_view = new App.OtherPlayerView( { model : new App.OtherPlayer(other_player_fixed), el : other_player_container } );
+      other_player_view.render();
+    }, this );
+    console.log( "============================================================" );
+    return this;
+  }
+});
+
+App.OtherPlayerView = Backbone.View.extend({
+  template: _.template($("#application-other-player").html()),
+
+  initialize : function() {
+    this.chosen = false;
+  },
+
+  render: function() {
+    console.log( "render other_player view" );
+
+    $(this.el).html( this.template( this.model.toJSON() ) );
+
+    return this;
+  },
+
+  events: {
+    "click .card": "choose"
+  },
+
+  choose: function() {
+    if( this.chosen ){
+      this.chosen = false;
+      this.$el.children('.card').removeClass('selected');
+    }
+    else{
+      this.chosen = true;
+      $('.card').removeClass('selected');
+      this.$el.children('.card').addClass('selected');
+    }
+  }
+});
+
 
 
 App.TradeListView = Backbone.View.extend({
@@ -72,6 +145,14 @@ App.Hand = Backbone.Model.extend({
 
 App.Card = Backbone.Model.extend({
 });
+
+App.OtherPlayers = Backbone.Model.extend({
+});
+
+App.OtherPlayer = Backbone.Model.extend({
+});
+
+
 
 App.CardView = Backbone.View.extend({
   template: _.template($("#application-game-card").html()),
