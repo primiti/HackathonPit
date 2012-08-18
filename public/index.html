@@ -18,10 +18,8 @@
 
     <script type="text/javascript">
 
-    var app;
-    var socket_wrapper, socket_view;
-
-
+    var app, client;
+    
 	function sendIfEnter( textarea, evt )
 	{
 	  if ( socket && evt.keyCode == '13' )
@@ -84,10 +82,7 @@ function setup()
     Backbone.history.start();
 //    Backbone.history.start({pushState : true});
 
-
-  socket_wrapper = new SocketWrapper( { host : 'localhost', port : 8080 } );
-  socket_wrapper.connect();
-
+    client = new App.Client();
 };
 
 

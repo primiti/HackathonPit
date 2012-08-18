@@ -24,12 +24,6 @@ var SocketWrapper = Backbone.Model.extend( {
               try
               {
                 var response = JSON.parse( msg.data );
-                console.log( response );
-				app.model.hand.set( { cards: response.this_player.hand } );
-				app.model.other_players.set( { player_list: response.other_players } );
-				app.model.this_player.set( { name: response.this_player.player_name } );
-				app.model.game.set( { state: response.state } );
-				app.model.sound.set( { sound_to_play: response.sound_to_play } );
               }
               catch( ex )
               {
@@ -37,14 +31,7 @@ var SocketWrapper = Backbone.Model.extend( {
                 return;
               }
 
-              if ( response.type == "Connect" )
-              {
-                  self.trigger( "socket:connect", response['data'] );
-              }
-              else
-              {
-                  self.trigger( "socket:message", response['type'], response['data'] );
-              }
+              self.trigger( "socket:message", response );
           };
 
           socket.onerror = function(evt) {
@@ -57,7 +44,18 @@ var SocketWrapper = Backbone.Model.extend( {
               console.log( evt );
           }
       },
-
+      
+      send: function( message ) {
+        if ( this.get( 'connected' ) )
+        {
+          socket.send( message );
+        }
+        else
+        {
+          log_error( "Socket disconnected. Could not send: '" + message + "'")
+        }
+      },
+      
       disconnect: function() {
           if ( socket )
           {

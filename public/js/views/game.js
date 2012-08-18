@@ -93,16 +93,17 @@ App.GameControlsView = Backbone.View.extend({
   },
   
   clicked: function( ) {
-    if ( this.model.get( 'state' ) )
+    if ( this.model.get( 'state' ) == 'lobby' )
     {
-       // TODO - wire through model
-       socket.send( 'start' );
+      client.sendMessage( 'start' );
+    }
+    else
+    {
+      client.sendMessage( 'ring_bell' );
     }
   },
-  
+
   render: function() {
-    console.log( "Controls")
-    console.log( this.model.toJSON() );
     $(this.el).html( this.template( this.model.toJSON() ) );
 
     return this;
@@ -122,20 +123,19 @@ App.OtherPlayersView = Backbone.View.extend({
     $(this.el).html( this.template( this.model ) );
  
     _.each( this.model.attributes.player_list, function ( other_player ) {
-		console.log( other_player );
       var other_player_container = jQuery( "<div></div>" );
       this.$el.append( other_player_container );	  
-	  var other_player_fixed = {
-		  name : other_player.player_name,
-		  offer_count : 0,
-		  trade_with : null
-	  };
-	  
-	  if ( other_player.offer )
-	  {
-		  other_player_fixed["offer_count"] = other_player.offer.count;
-		  other_player_fixed["trade_with"] = other_player.offer.trade_with;
-	  }	  
+      var other_player_fixed = {
+        name : other_player.player_name,
+        offer_count : 0,
+        trade_with : null
+    };
+   
+    if ( other_player.offer )
+    {
+      other_player_fixed["offer_count"] = other_player.offer.count;
+      other_player_fixed["trade_with"] = other_player.offer.trade_with;
+    }	  
       var other_player_view = new App.OtherPlayerView( { model : new App.OtherPlayer(other_player_fixed), el : other_player_container } );
       other_player_view.render();
     }, this );
@@ -183,8 +183,6 @@ App.TradeListView = Backbone.View.extend({
   },
 
   render: function() {
-    console.log( "render trade list view" );
-
     _.each( this.trades, function( trade ) {
       console.log( trade );
 
@@ -294,11 +292,32 @@ App.Hand = Backbone.Model.extend({
   },
   
   make_offer: function() {
-    // TODO!! this should go through socket wrapper and stuff
-    var message = 'make_offer ' + this.get( 'chosen_commodity' ) + ' ' + this.get( 'chosen_offer_count' );
-    console.log( "SOCKET MESSAGE: " + message );
-    socket.send( message );
+    client.sendMessage( 'make_offer ' + this.get( 'chosen_commodity' ) + ' ' + this.get( 'chosen_offer_count' ) );
   }
 });
 
 App.Card = Backbone.Model.extend({});
+
+App.Client = Backbone.Model.extend({
+  initialize : function() {
+    this.socket_wrapper = new SocketWrapper( { host : 'localhost', port : 8080 } );
+  
+    this.socket_wrapper.bind( "socket:message", this.receiveMessage )
+    this.socket_wrapper.connect();
+  },
+  
+  receiveMessage : function( response )
+  {
+    app.model.hand.set( { cards: response.this_player.hand } );
+    app.model.other_players.set( { player_list: response.other_players } );
+    app.model.this_player.set( { name: response.this_player.player_name } );
+    app.model.game.set( { state: response.state } );
+    app.model.sound.set( { sound_to_play: response.sound_to_play } );
+  },
+  
+  sendMessage : function( message )
+  {
+    console.log( "CLIENT::sendMessage( '" + message + "' )")
+    this.socket_wrapper.send( message );
+  }
+});
