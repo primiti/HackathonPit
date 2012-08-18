@@ -8,13 +8,12 @@ App.BoardView = Backbone.View.extend({
     console.log( "render board view" );
     $(this.el).html( this.template( this.model ) );
 
-    this.gameControls  = new App.GameControlsView( { model: this.model, el: this.$('#controls') } );
+    this.gameControls  = new App.GameControlsView( { model: this.model.game, el: this.$('#controls') } );
     this.tradeList     = new App.TradeListView( { model : this.model, el: this.$('#trade-list') } );
     this.hand          = new App.HandView( { model : this.model.hand, el: this.$('#hand') } );
     this.offerCount    = new App.OfferCountView( { model : this.model.hand, el: this.$('#offer-count') } );
     this.other_players = new App.OtherPlayersView( { model : this.model.other_players, el: this.$('#other-players') } );
     this.this_player   = new App.ThisPlayerView( { model : this.model.this_player, el: this.$('#this-player') } );
-    this.game_state    = new App.GameStateView( { model : this.model.game, el: this.$('#game-state') } );
 
     this.gameControls.render();
     this.tradeList.render();
@@ -22,31 +21,10 @@ App.BoardView = Backbone.View.extend({
     this.offerCount.render();
     this.other_players.render();
     this.this_player.render();
-    this.game_state.render();
 
     return this;
   }
 });
-
-App.GameStateView = Backbone.View.extend({
-  template: _.template($("#application-game-state").html()),
-
-  initialize : function() {
-  	console.log( "---------------------" );
-	console.log( "initialize" );
-	console.log( this.model );
-    this.model.bind( "change:state", this.render, this );
-  },
-  render: function() {
-    console.log( "render game-state view" );
-    console.log( this.model );
-
-    $(this.el).html( this.template( this.model.toJSON() ) );
-
-    return this;
-  },
-});
-
 
 App.ThisPlayerView = Backbone.View.extend({
   template: _.template($("#application-this-player").html()),
@@ -55,9 +33,6 @@ App.ThisPlayerView = Backbone.View.extend({
     this.model.bind( "change:name", this.render, this );
   },
   render: function() {
-    console.log( "render this_player view" );
-    console.log( this.model );
-
     $(this.el).html( this.template( this.model.toJSON() ) );
 
     return this;
@@ -69,11 +44,25 @@ App.GameControlsView = Backbone.View.extend({
   template: _.template($("#application-game-controls").html()),
 
   initialize: function() {
+    this.model.bind( "change:state", this.render, this );
   },
-
+  
+  events: {
+    "click .btn" : "clicked"
+  },
+  
+  clicked: function( ) {
+    if ( this.model.get( 'state' ) )
+    {
+       // TODO - wire through model
+       socket.send( 'start' );
+    }
+  },
+  
   render: function() {
-      // TODO - wire this to bob's model
-    $(this.el).html( this.template( { state : 'lobby' } ) );
+    console.log( "Controls")
+    console.log( this.model.toJSON() );
+    $(this.el).html( this.template( this.model.toJSON() ) );
 
     return this;
   }
@@ -88,12 +77,8 @@ App.OtherPlayersView = Backbone.View.extend({
   },
 
   render: function() {
-    console.log( "============================================================" );
-    console.log( "render other players view" );
 
     $(this.el).html( this.template( this.model ) );
-    console.log( this.model );
-
  
     _.each( this.model.attributes.player_list, function ( other_player ) {
 		console.log( other_player );
@@ -113,7 +98,6 @@ App.OtherPlayersView = Backbone.View.extend({
       var other_player_view = new App.OtherPlayerView( { model : new App.OtherPlayer(other_player_fixed), el : other_player_container } );
       other_player_view.render();
     }, this );
-    console.log( "============================================================" );
     return this;
   }
 });
@@ -126,8 +110,6 @@ App.OtherPlayerView = Backbone.View.extend({
   },
 
   render: function() {
-    console.log( "render other_player view" );
-
     $(this.el).html( this.template( this.model.toJSON() ) );
 
     return this;
