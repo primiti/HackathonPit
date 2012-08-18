@@ -107,7 +107,6 @@ App.OtherPlayersView = Backbone.View.extend({
   },
 
   render: function() {
-
     $(this.el).html( this.template( this.model ) );
 
     _.each( this.model.attributes.player_list, function ( other_player ) {
@@ -145,19 +144,14 @@ App.OtherPlayerView = Backbone.View.extend({
   },
 
   events: {
-    "click .card": "choose"
+    "click .other_player": "choose"
   },
 
   choose: function() {
-    if( this.chosen ){
-      this.chosen = false;
-      this.$el.children('.card').removeClass('selected');
-    }
-    else{
-      this.chosen = true;
-      $('.card').removeClass('selected');
-      this.$el.children('.card').addClass('selected');
-    }
+	  console.log( "choose" )
+	  console.log( this.model )
+	  client.sendMessage( "trade_with " + this.model.attributes.name );
+//      this.model.get( 'hand' ).set( 'trade_with', this.model.get( 'name' ) );
   }
 });
 
