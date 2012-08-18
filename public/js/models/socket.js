@@ -25,6 +25,18 @@ var SocketWrapper = Backbone.Model.extend( {
               {
                 var response = JSON.parse( msg.data );
                 console.log( response );
+			    app.model.hand.set({ cards : {
+			             "Cocoa" : 10,
+			             "Platinum" : 20,
+			             "Gold" : 0,
+			             "Cattle" : 1,
+			             "Oil" : 2,
+			             "Rice" : 0,
+			             "Silver" : 0,
+			             "Gas" : 0
+			           } });
+        
+				app.model.hand.set( { cards: response.this_player.hand } );
               }
               catch( ex )
               {
