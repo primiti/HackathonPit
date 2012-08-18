@@ -50,6 +50,16 @@ body {
   }
 }
 
+.this-player {
+  float: left;
+  margin: .5em;
+  padding: 0 1em;
+  border: 1px solid #9cd3ff;
+  border-radius: 5px;
+  background-color: #ffc7e6;
+  color: #444;
+  min-width: 100px; }
+
 
 // COMMON classes
 .clear_left {

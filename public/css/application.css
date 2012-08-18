@@ -49,10 +49,6 @@ body {
   background-color: #ffc7e6;
   color: #444;
   min-width: 100px; }
-  .other_player h1 {
-    margin-top: .1em;
-    font-size: 1.3em; }
-
 
 .clear_left {
   clear: left; }
