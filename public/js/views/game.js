@@ -14,7 +14,6 @@ App.BoardView = Backbone.View.extend({
     this.offerCount    = new App.OfferCountView( { model : this.model.hand, el: this.$('#offer-count') } );
     this.other_players = new App.OtherPlayersView( { model : this.model.other_players, el: this.$('#other-players') } );
     this.this_player   = new App.ThisPlayerView( { model : this.model.this_player, el: this.$('#this-player') } );
-    this.game_state    = new App.GameStateView( { model : this.model.game, el: this.$('#game-state') } );
     this.sound_player  = new App.SoundPlayerView( { model : this.model.sound, el: this.$('#sounds') } );
 
     this.gameControls.render();
@@ -23,7 +22,6 @@ App.BoardView = Backbone.View.extend({
     this.offerCount.render();
     this.other_players.render();
     this.this_player.render();
-    this.game_state.render();
     this.sound_player.render();
 
     return this;
@@ -38,26 +36,6 @@ App.SoundPlayerView = Backbone.View.extend({
   },
   render: function() {
     console.log( "render sound view" );
-    console.log( this.model );
-
-    $(this.el).html( this.template( this.model.toJSON() ) );
-
-    return this;
-  },
-});
-
-
-App.GameStateView = Backbone.View.extend({
-  template: _.template($("#application-game-state").html()),
-
-  initialize : function() {
-  	console.log( "---------------------" );
-	console.log( "initialize" );
-	console.log( this.model );
-    this.model.bind( "change:state", this.render, this );
-  },
-  render: function() {
-    console.log( "render game-state view" );
     console.log( this.model );
 
     $(this.el).html( this.template( this.model.toJSON() ) );
@@ -92,14 +70,15 @@ App.GameControlsView = Backbone.View.extend({
     "click .btn" : "clicked"
   },
   
-  clicked: function( ) {
+  clicked: function( evt ) {
     if ( this.model.get( 'state' ) == 'lobby' )
     {
       client.sendMessage( 'start' );
     }
     else
     {
-      client.sendMessage( 'ring_bell' );
+      var restart = jQuery( evt.target ).hasClass( 'btn-danger' );
+      client.sendMessage( restart ? 'start' : 'ring_bell' );
     }
   },
 

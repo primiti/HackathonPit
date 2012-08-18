@@ -159,6 +159,7 @@ $(window).unload( function() {
     <script type="text/html" id="application-game-controls">
       <div class="game-controls">
         <% if ( state == 'running' ) { %>
+          <a class="btn btn-danger"><i class="icon-exclamation-sign icon-white"></i> Restart game</a>
           <a class="btn btn-primary"><i class="icon-bell icon-white"></i> Ring bell</a>
         <% } else { %>
           <a class="btn btn-primary"><i class="icon-star-empty icon-white"></i> Start</a>
@@ -211,12 +212,6 @@ $(window).unload( function() {
       <div class="card <%= chosen ? 'selected' : '' %>" style="<%= count == 0 ? 'display:none' : '' %>">
         <h1><%= commodity %></h1>
         <h2><%= count %></h2>
-      </div>
-    </script>
-
-    <script type="text/html" id="application-game-state">
-      <div class="game-state">
-        <%= state %>
       </div>
     </script>
 
