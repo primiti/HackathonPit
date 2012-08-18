@@ -39,6 +39,20 @@ function sendIfEnter( textarea, evt )
   }
 }
 
+function login( form )
+{
+  var user = $(form).find( 'input[name=name]' ).val();
+  
+  if ( !user )
+  {
+    alert( "Username required!" );
+    return false;
+  }
+  
+  app.lobby.login( user );
+  return false;
+}
+
 function setup()
 {
     app = new App.MainView({ el: $("#application") });
@@ -78,7 +92,10 @@ $( function() {
 } );
 
 $(window).unload( function() {
-  socket.close();
+  if ( socket )
+  {
+    socket.close();
+  }
 })
 
 </script>
@@ -127,7 +144,12 @@ $(window).unload( function() {
     
     <!-- TEMPLATES -->
     <script type="text/html" id="application-lobby">
-      LOBBY!
+      <h3>Lobby</h3>
+      
+      <form action="/#game" class="well form-search" onsubmit="login(this); return false">
+        <input type="text" class="input-large" name="name">
+        <button type="submit" class="btn">Join game</button>
+      </form>
     </script>
     
     <script type="text/html" id="application-game">
