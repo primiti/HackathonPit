@@ -179,22 +179,38 @@ App.HandView = Backbone.View.extend({
   template: _.template($("#application-game-hand").html()),
 
   initialize : function() {
-    this.model.bind( "change:cards", this.render, this );
+    this.model.bind( "change:cards", this.refresh, this );
     this.model.bind( "change:chosen_commodity", this.commodity_changed, this );
   },
 
   commodity_changed: function() {
-      this.render();
+      this.refresh();
+  },
+  
+  refresh: function() {
+    // walk each div
+    console.log( "IN REFRESH" );
+    
+    // animate show/hide OR animate change of number
+    _.each( this.model.attributes.cards, function ( value, key ) {
+      var card_container = jQuery( "#card_" + key );
+
+      var card = new App.CardView( { model : new App.Card( { 'hand' : this.model, 'commodity' : key, 'count' : value, 'chosen' : this.model.get( 'chosen_commodity' ) == key } ), el : card_container } );
+      card.refresh();
+    }, this );
   },
 
   render: function() {
 
+    console.log( "IN RENDER" );
+
+    
     $(this.el).html( this.template( this.model ) );
 
     _.each( this.model.attributes.cards, function ( value, key ) {
-      var card_container = jQuery( "<div></div>" );
+      var card_container = jQuery( "<div id='card_" + key + "'></div>" );
       this.$el.append( card_container );
-      var card = new App.CardView( { model : new App.Card({ 'hand' : this.model, 'commodity' : key, 'count' : value, 'chosen' : this.model.get( 'chosen_commodity' ) == key }), el : card_container } );
+      var card = new App.CardView( { model : new App.Card( { 'hand' : this.model, 'commodity' : key, 'count' : value, 'chosen' : this.model.get( 'chosen_commodity' ) == key } ), el : card_container } );
       card.render();
     }, this );
 
@@ -212,10 +228,43 @@ App.CardView = Backbone.View.extend({
   events: {
     "click .card": "choose"
   },
+  
+  refresh: function() {
+    if ( old_cards = this.model.get( 'hand' ).previousAttributes().cards )
+    {
+      var old_count = old_cards[ this.model.get( 'commodity' ) ];
+      var new_count = this.model.get( 'count' );
+      
+      if ( old_count != new_count )
+      {
+        $(this.el).find( 'h2' ).text( new_count );
+        
+        
+        if ( this.model.get( 'count') > 0 )
+        {
+          this.$el.fadeIn( );
+        }
+        else
+        {
+          this.$el.hide( );
+        }
+        
+        this.$el.find( '.card' ).effect("highlight", { }, 2000);
+        
+      }
+      else
+      {
+        this.$el.toggle( this.model.get( 'count') > 0 );
+      }
+    }
 
+    this.$el.find( '.card' ).toggleClass( 'selected', this.model.get( 'chosen') );    
+  },
+  
   render: function() {
     $(this.el).html( this.template( this.model.toJSON() ) );
-
+    this.refresh();
+    
     return this;
   },
 
@@ -299,6 +348,8 @@ App.Hand = Backbone.Model.extend({
     else {
       console.log('cannot make this trade');
     }
+    
+    this.set( { 'chosen_commodity' : null, 'chosen_offer_count' : 0 } );
   }
 });
 

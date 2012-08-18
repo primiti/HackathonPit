@@ -189,7 +189,7 @@ $(window).unload( function() {
     </script>
 
     <script type="text/html" id="application-game-card">
-      <div class="card <%= chosen ? 'selected' : '' %>" style="<%= count == 0 ? 'display:none' : '' %>">
+      <div class="card">
         <h1><%= commodity %></h1>
         <h2><%= count %></h2>
       </div>
@@ -229,6 +229,8 @@ $(window).unload( function() {
     <!-- Javascript resources
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+    
     <script src="js/bootstrap.js"></script>
     <script src="js/backbone.js"></script>
     <script src="js/models/socket.js"></script>
