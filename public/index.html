@@ -194,9 +194,11 @@ $(window).unload( function() {
     </script>
 
     <script type="text/html" id="application-sounds">
-       <audio src="<%= sound_to_play %>" autoplay>
-                 <p>Your browser does not support the audio element </p>
-       </audio>
+	<audio id="game_audio_target">
+	  <source src="<%= sound_to_play %>" type="audio/mpeg"  autoplay>
+	  </source>
+	  your browser doesn't support HTML5 audio      
+	</audio>
 	 </script>
 
     <script type="text/html" id="application-other-players">

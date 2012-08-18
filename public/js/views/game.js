@@ -39,6 +39,7 @@ App.SoundPlayerView = Backbone.View.extend({
     console.log( this.model );
 
     $(this.el).html( this.template( this.model.toJSON() ) );
+	$('#game_audio_target').get(0).play();
 
     return this;
   },
@@ -288,7 +289,7 @@ App.Card = Backbone.Model.extend({});
 
 App.Client = Backbone.Model.extend({
   initialize : function() {
-    this.socket_wrapper = new SocketWrapper( { host : 'localhost', port : 8080 } );
+    this.socket_wrapper = new SocketWrapper( { host : window.location.hostname, port : 8080 } );
   
     this.socket_wrapper.bind( "socket:message", this.receiveMessage )
     this.socket_wrapper.connect();
