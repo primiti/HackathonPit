@@ -47,7 +47,7 @@ App.MainView = Backbone.View.extend({
 
   render: function() {
     this.lobby = new App.LobbyView({ el: this.$("#lobby") });
-    this.game  = new App.GameView({ el: this.$("#game") });
+    this.game  = new App.GameView({ el: this.$("#game"), model : app.model });
   }
 });
 
@@ -77,9 +77,14 @@ App.LobbyView = Backbone.View.extend({
 App.GameView = Backbone.View.extend({
   template: _.template($("#application-game").html()),
 
+  initialize: function() {
+  },
+
   render: function() {
     console.log( "render lobby view" );
     $(this.el).html( this.template( this.model ) );
+    this.boardView = new App.BoardView({ model : this.model, el : this.$('#board') });
+    this.boardView.render();
 
     return this;
   }

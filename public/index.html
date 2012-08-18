@@ -56,6 +56,19 @@ function login( form )
 function setup()
 {
     app = new App.MainView({ el: $("#application") });
+
+    app.model = { hand : new App.Hand(
+        { cards : {
+          "Cocoa" : 4,
+          "Platinum" : 2,
+          "Gold" : 0,
+          "Cattle" : 1,
+          "Oil" : 2,
+          "Rice" : 0,
+          "Silver" : 0,
+          "Gas" : 0
+        } })  };
+
     app.render();
 
     var router = new App.Router();
@@ -63,27 +76,13 @@ function setup()
 //    Backbone.history.start({pushState : true});
 
 
-  if ( WebSocket ) {
-    $('.if-web-sockets').show();
-  }
-  else {
-    $('.no-web-sockets').show();
-  }
-
   socket_wrapper = new SocketWrapper( { host : 'localhost', port : 8080 } );
-
-  socket_view = new SocketView( { model: socket_wrapper } );
-  $('#connect').append( socket_view.$el );
-
-  socket_view.render();
 
   // auto connect if connect is in hash
   if ( window.location.hash.search( /connect/ ) != -1 ) {
     socket_wrapper.connect();
   }
 
-  socket_messages_list_view = new SocketMessageListView( { model: socket_wrapper } );
-  $('#messages').append( socket_messages_list_view.$el );
 };
 
 
@@ -153,24 +152,41 @@ $(window).unload( function() {
     </script>
 
     <script type="text/html" id="application-game">
-      GAME!!
+      <div id='board'></div>
     </script>
 
-    <script type="text/html" id="template-socket-connection">
-      <p>Status: <b><%= connected ? 'connected' : 'not connected' %></b></p>
-      <a class="btn btn-primary <%= connected ? 'disabled' : '' %>"><i class="icon-cog icon-white"></i> Connect</a>
-      <a class="btn btn-danger  <%= connected ? '' : 'disabled' %>"><i class="icon-remove icon-white"></i> Disconnect</a>
+    <script type="text/html" id="application-game-board">
+      <div id='trade-list'></div>
+      <div id='hand'></div>
+      <div id='offer-count'></div>
     </script>
 
-    <script type="text/html" id="template-socket-message">
-      <div class='alert alert-info'>
-        <h4><%= name %></h4>
-        <p><%= details %></p>
+    <script type="text/html" id="application-game-trade-list">
+      trade list
+    </script>
+
+    <script type="text/html" id="application-game-trade">
+      <div>
+        <h4><%= player_name %></h4>
+        <p><%= offer_type %>: <%= offer_count %></p>
       </div>
     </script>
 
-    <script type="text/html" id="template-socket-message-list">
-      <div></div>
+    <script type="text/html" id="application-game-offer-count">
+    </script>
+
+    <script type="text/html" id="application-game-offer-count-number">
+      <div><%= number %></div>
+    </script>
+
+    <script type="text/html" id="application-game-hand">
+    </script>
+
+    <script type="text/html" id="application-game-card">
+      <div class="card">
+        <%= commodity %>
+        <%= count %>
+      </div>
     </script>
 
     <!-- Javascript resources
@@ -180,7 +196,7 @@ $(window).unload( function() {
     <script src="js/backbone.js"></script>
     <script src="js/models/socket.js"></script>
     <script src="js/views/application.js"></script>
-    <script src="js/views/socket.js"></script>
+    <script src="js/views/game.js"></script>
 
   </body>
 </html>
