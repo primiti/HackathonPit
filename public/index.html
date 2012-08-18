@@ -82,7 +82,7 @@ $(window).unload( function() {
   <body>
 
     <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
+      <div class="navbar-inner hidden-phone">
         <div class="container-fluid">
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
@@ -110,11 +110,9 @@ $(window).unload( function() {
         <div id="game"  class="view"></div>
       </div>
 
-      <hr>
-
       <footer>
         <p>&copy; 2012 Team Irish.  Created at RingRevenue Hackathon 2012.</p>
-        <textarea onkeyup="sendIfEnter(this, event)" rows=3 col=30>start</textarea>
+        <!-- <textarea onkeyup="sendIfEnter(this, event)" rows=3 col=30>start</textarea> -->
       </footer>
 
     </div><!--/.fluid-container-->
@@ -169,26 +167,29 @@ $(window).unload( function() {
     </script>
 
     <script type="text/html" id="application-game-offer-count">
-    <div class="btn-group"></div>
+    <h4>How many to offer:</h4>
+    <div class="btn-group offer-container">
+    </div>
     </script>
 
 	<script type="text/html" id="application-this-player">
-	    <div class="this-player">
+    	<div class="this-player-container">
+        <h3>Me</h3>
+	      <div class="this-player">
 	      <h1><%= this_player.name %></h1>	      
-	      <p>
-	      <% if ( this_player.offer_count == 0 ) { %>
-	        <i>no offers</i>
-	      <% } else { %>
-	        <i>offering:</i>
-	        <h2><%= this_player.offer_count %> <%= this_player.offer_card_type %></h2>
-	        <% if ( this_player.trade_with ) { %>
-	          offering to <b><%= this_player.trade_with %></b>
-	        <% } %>
-	      <% } %>
-	      </p>
-		  
+  	      <p>
+  	      <% if ( this_player.offer_count == 0 ) { %>
+  	        <i>no offers</i>
+  	      <% } else { %>
+  	        <i>offering:</i>
+  	        <h2><%= this_player.offer_count %> <%= this_player.offer_card_type %></h2>
+  	        <% if ( this_player.trade_with ) { %>
+  	          offering to <b><%= this_player.trade_with %></b>
+  	        <% } %>
+  	      <% } %>
+  	      </p>
+	      </div>
 	    </div>
-		
 	</script>
 
     <script type="text/html" id="application-game-offer-count-number">
@@ -220,7 +221,7 @@ $(window).unload( function() {
     </script>
     
     <script type="text/html" id="application-other-player">
-	    <div class="other_player">
+	    <div class="other_player <%= offer_count > 0 ? 'has_offer' : '' %>">
 	      <h1><%= name %></h1>
 	      
 	      <p>

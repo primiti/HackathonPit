@@ -16,13 +16,20 @@ body {
  
 .card {
     float: left;
+    cursor: pointer;
     margin: .5em;
     padding: 1em;
     border: 1px solid #ddd;
+    border-radius: 5px;
     background-color: #eee;
     color: #444;
     text-align: center;
     min-width: 100px;
+    width: 20%;
+    
+    &:hover {
+      background-color: #c7e6ff;
+    };
     
     h1 {
         font-size: 1.5em;
@@ -34,29 +41,63 @@ body {
     }
 }
 
+ @media (max-width: 480px) {  
+   .card {
+     min-width: 30px;
+     padding: .5em;;
+   }
+}
+
+#offer-count {
+  .btn { min-width: 20% };
+}
+
+$player_bg : #e2f2ff;
+$player_active_bg : #dcffde;
+$this_player_bg : #fedeb4;
+
 .other_player {
   float: left;
   margin: .5em;
   padding: 0 1em;
-  border: 1px solid #9cd3ff;
+  border: 1px solid darken( $player_bg, 10% );
   border-radius: 5px;
-  background-color: #c7e6ff;
+  background-color: $player_bg;
   color: #444;
   min-width: 100px;
+
+  &:first-child {
+    margin-left: 0em;
+  };
   
+  &.has_offer {
+    background-color: darken( $player_bg, 10% );
+    border: 1px solid darken( $player_bg, 15% );
+  }
+  
+  &.active_offer {
+    background-color: $player_active_bg;
+    border: 1px solid darken( $player_active_bg, 10% );
+  }
+
   h1 { 
     margin-top: .1em;
     font-size: 1.3em;
   }
 }
 
-.this-player {
+.this-player-container {
   float: left;
-  margin: .5em;
+  margin-right: 1em;
+}
+
+
+.this-player {
+  margin: .5em .5em .5em 0;
   padding: 0 1em;
-  border: 1px solid #9cd3ff;
+  border: 1px solid darken( $this_player_bg, 10% );
   border-radius: 5px;
-  background-color: #ffc7e6;
+  background-color: $this_player_bg;
   color: #444;
   min-width: 100px; }
 

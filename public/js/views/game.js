@@ -315,7 +315,7 @@ App.OfferCountView = Backbone.View.extend({
     }
 
     _.each( [1, 2, 3, 4], function ( number ) {
-      this.$el.children('.btn-group').append( number_template( { "number" : number, "max_number" : max_number } ) );
+      this.$el.children('.offer-container').append( number_template( { "number" : number, "max_number" : max_number } ) );
     }, this );
 
     return this;
