@@ -14,8 +14,10 @@ require 'em-hiredis'
 require 'sinatra/base'
 require 'thin'
 require 'json'
+require "app/model/game"
 
 @sockets = []
+@game = Game.new
 
 class ServerApp < Sinatra::Base
   get '/' do
@@ -32,6 +34,7 @@ EventMachine.run do
     
     socket.onmessage do |mess|
       @sockets.each{ |s| next if s == socket; s.send( { :type => :Message, :data => mess }.to_json ) }
+      @sockets.each{ |s| next if s == socket; s.send( { :type => :Game, :data => @game }.to_json ) }
     end
     socket.onclose do
       @sockets.delete socket
