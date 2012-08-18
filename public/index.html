@@ -23,10 +23,10 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    
+
     <script type="text/javascript">
 
-    var app;    
+    var app;
 
   var socket_wrapper, socket_view;
 
@@ -42,13 +42,13 @@ function sendIfEnter( textarea, evt )
 function login( form )
 {
   var user = $(form).find( 'input[name=name]' ).val();
-  
+
   if ( !user )
   {
     alert( "Username required!" );
     return false;
   }
-  
+
   app.lobby.login( user );
   return false;
 }
@@ -69,19 +69,19 @@ function setup()
   else {
     $('.no-web-sockets').show();
   }
-  
+
   socket_wrapper = new SocketWrapper( { host : 'localhost', port : 8080 } );
-  
+
   socket_view = new SocketView( { model: socket_wrapper } );
   $('#connect').append( socket_view.$el );
-  
+
   socket_view.render();
-  
+
   // auto connect if connect is in hash
   if ( window.location.hash.search( /connect/ ) != -1 ) {
     socket_wrapper.connect();
   }
-  
+
   socket_messages_list_view = new SocketMessageListView( { model: socket_wrapper } );
   $('#messages').append( socket_messages_list_view.$el );
 };
@@ -113,7 +113,7 @@ $(window).unload( function() {
             <span class="icon-bar"></span>
           </a>
           <a class="brand" href="#">Pit. The Game. Realtime.</a>
-          
+
           <div class="nav-collapse">
             <!-- TODO : this should be a backbone view -->
             <ul class="nav">
@@ -132,7 +132,7 @@ $(window).unload( function() {
         <div id="lobby" class="view"></div>
         <div id="game"  class="view"></div>
       </div>
-      
+
       <hr>
 
       <footer>
@@ -140,35 +140,35 @@ $(window).unload( function() {
       </footer>
 
     </div><!--/.fluid-container-->
-    
-    
+
+
     <!-- TEMPLATES -->
     <script type="text/html" id="application-lobby">
       <h3>Lobby</h3>
-      
+
       <form action="/#game" class="well form-search" onsubmit="login(this); return false">
         <input type="text" class="input-large" name="name">
         <button type="submit" class="btn">Join game</button>
       </form>
     </script>
-    
+
     <script type="text/html" id="application-game">
       GAME!!
     </script>
-    
+
     <script type="text/html" id="template-socket-connection">
       <p>Status: <b><%= connected ? 'connected' : 'not connected' %></b></p>
       <a class="btn btn-primary <%= connected ? 'disabled' : '' %>"><i class="icon-cog icon-white"></i> Connect</a>
       <a class="btn btn-danger  <%= connected ? '' : 'disabled' %>"><i class="icon-remove icon-white"></i> Disconnect</a>
     </script>
-    
+
     <script type="text/html" id="template-socket-message">
       <div class='alert alert-info'>
         <h4><%= name %></h4>
         <p><%= details %></p>
       </div>
     </script>
-    
+
     <script type="text/html" id="template-socket-message-list">
       <div></div>
     </script>
