@@ -37,6 +37,18 @@ EventMachine.run do
     socket.onmessage do |mess|
       # Process message
       puts "Received message #{mess.inspect}"
+      
+      command_and_args = mess.split(' ')
+      command = command_and_args[0]
+      args = command_and_args[1..-1]
+      puts command
+      puts args.inspect
+      
+      case command 
+      when "start"
+        @game.start
+      end
+      
       # Sends to every other player.
       @game.send_updates
     end

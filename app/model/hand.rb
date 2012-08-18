@@ -17,6 +17,10 @@ class Hand
   
   attr_accessor :cards
   def initialize
+    clear
+  end
+  
+  def clear
     @cards = CARD_TYPES.inject({}) { |acc, card| acc[card.type] = 0; acc } 
   end
   

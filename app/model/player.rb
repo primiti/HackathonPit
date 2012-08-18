@@ -30,7 +30,7 @@ class Player
   def make_offer card_type, count
     @offer=Offer.new card_type, count  
   end
-  
+    
   def to_hash
     { "player_name"=>name,
       "offer"=> (offer && offer.to_hash),

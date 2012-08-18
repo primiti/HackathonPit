@@ -27,6 +27,7 @@ class Game
     end
     deck.shuffle!
     players.each do |player|
+      player.hand.clear
       9.times { player.hand.add_card deck.pop }
     end
     @state = "running"  
@@ -37,10 +38,12 @@ class Game
     
   end
   
-  def remove_player_for_socket socket    
-    @last_result = "aborted because player exited"
+  def remove_player_for_socket socket
+    player_to_remove = @players.select{ |player| player.socket == socket }.first
+    @players = @players.reject{ |player| player.socket == socket }
+    @last_result = "aborted because #{player_to_remove.name} exited"
     @state = "lobby"
-  end  
+  end
   
   def resolve_offers
     # Delete invalid offers

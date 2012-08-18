@@ -31,12 +31,24 @@ class ModelTest < MiniTest::Spec
       context "with players" do 
         setup do 
           @g = Game.new
-          @p1 = @g.add_player "socket"
-          @p2 = @g.add_player "socket"
-          @p3 = @g.add_player "socket"
-          @p4 = @g.add_player "socket"         
+          @p1 = @g.add_player "socket1"
+          @p2 = @g.add_player "socket2"
+          @p3 = @g.add_player "socket3"
+          @p4 = @g.add_player "socket4"         
         end
+        
+        should "allow players to be removed" do 
+          @g.start
+          assert_equal "running", @g.state
+          
+          @g.remove_player_for_socket "socket2"
+          assert_equal 3, @g.players.size
+          assert_equal "lobby", @g.state
+          assert_equal "aborted because #{@p2.name} exited", @g.last_result
+        end
+        
         should "have a start game method that adds 9 cards to each player" do 
+          @g.start
           @g.start
           card_counts = {}
           @g.players.each do |p|
