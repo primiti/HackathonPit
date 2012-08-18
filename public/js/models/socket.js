@@ -26,7 +26,9 @@ var SocketWrapper = Backbone.Model.extend( {
                 var response = JSON.parse( msg.data );
                 console.log( response );
 				app.model.hand.set( { cards: response.this_player.hand } );
-				app.model.other_players.set( { player_list: response.other_players} );
+				app.model.other_players.set( { player_list: response.other_players } );
+				app.model.this_player.set( { name: response.this_player.player_name } );
+				app.model.game.set( { state: response.state } );
               }
               catch( ex )
               {

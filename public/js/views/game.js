@@ -12,15 +12,57 @@ App.BoardView = Backbone.View.extend({
     this.hand          = new App.HandView( { model : this.model.hand, el: this.$('#hand') } );
     this.offerCount    = new App.OfferCountView( { model : this.model.hand, el: this.$('#offer-count') } );
     this.other_players = new App.OtherPlayersView( { model : this.model.other_players, el: this.$('#other-players') } );
+    this.this_player   = new App.ThisPlayerView( { model : this.model.this_player, el: this.$('#this-player') } );
+    this.game_state    = new App.GameStateView( { model : this.model.game, el: this.$('#game-state') } );
 
     this.tradeList.render();
     this.hand.render();
     this.offerCount.render();
     this.other_players.render();
+    this.this_player.render();
+    this.game_state.render();
 
     return this;
   }
 });
+
+App.GameStateView = Backbone.View.extend({
+  template: _.template($("#application-game-state").html()),
+
+  initialize : function() {
+  	console.log( "---------------------" );
+	console.log( "initialize" );
+	console.log( this.model );
+    this.model.bind( "change:state", this.render, this );
+  },
+  render: function() {
+    console.log( "render game-state view" );
+    console.log( this.model );
+
+    $(this.el).html( this.template( this.model.toJSON() ) );
+
+    return this;
+  },
+});
+
+
+
+App.ThisPlayerView = Backbone.View.extend({
+  template: _.template($("#application-this-player").html()),
+
+  initialize : function() {
+    this.model.bind( "change:name", this.render, this );
+  },
+  render: function() {
+    console.log( "render this_player view" );
+    console.log( this.model );
+
+    $(this.el).html( this.template( this.model.toJSON() ) );
+
+    return this;
+  },
+});
+
 
 App.OtherPlayersView = Backbone.View.extend({
   template: _.template($("#application-other-players").html()),
@@ -140,17 +182,12 @@ App.HandView = Backbone.View.extend({
   }
 });
 
-App.Hand = Backbone.Model.extend({
-});
-
-App.Card = Backbone.Model.extend({
-});
-
-App.OtherPlayers = Backbone.Model.extend({
-});
-
-App.OtherPlayer = Backbone.Model.extend({
-});
+App.Game = Backbone.Model.extend({});
+App.Hand = Backbone.Model.extend({});
+App.Card = Backbone.Model.extend({});
+App.OtherPlayers = Backbone.Model.extend({});
+App.OtherPlayer = Backbone.Model.extend({});
+App.ThisPlayer = Backbone.Model.extend({});
 
 
 

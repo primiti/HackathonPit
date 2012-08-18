@@ -61,27 +61,32 @@ function setup()
 {
     app = new App.MainView({ el: $("#application") });
 
-    app.model = { hand : new App.Hand(
-        { cards : {
-          "Cocoa" : 4,
-          "Platinum" : 2,
-          "Gold" : 0,
-          "Cattle" : 1,
-          "Oil" : 2,
-          "Rice" : 0,
-          "Silver" : 0,
-          "Gas" : 0
-        } } ),
- 		other_players : new App.OtherPlayers(  { player_list: [ 
-        { "player_name" : "Frodo", 
-           "offer" : { "card_type" : "Platinum", "count" : 2, "trade_with" : "Bilbo" }                     
-        }, 
-        { "player_name" : "Sam", 
-           "offer" : { "card_type" : "Cocoa", "count" : 1, "trade_with" : null }                     
-        }, 
-        { "player_name" : "Merry", 
-           "offer" : null
-        }] } )
+    app.model = { 
+		hand : new App.Hand( {
+	       cards : {
+	          "Cocoa" : 4,
+	          "Platinum" : 2,
+	          "Gold" : 0,
+	          "Cattle" : 1,
+	          "Oil" : 2,
+	          "Rice" : 0,
+	          "Silver" : 0,
+	          "Gas" : 0
+	        } } ),
+ 		other_players : new App.OtherPlayers(  { 
+			player_list: [ 
+		        { "player_name" : "Frodo", 
+		           "offer" : { "card_type" : "Platinum", "count" : 2, "trade_with" : "Bilbo" }                     
+		        }, 
+		        { "player_name" : "Sam", 
+		           "offer" : { "card_type" : "Cocoa", "count" : 1, "trade_with" : null }                     
+		        }, 
+		        { "player_name" : "Merry", 
+		           "offer" : null
+		        }
+			] } ),
+		this_player : new App.ThisPlayer( { "name" : "Bilbo" } ),
+		game : new App.Game( { "state" : "running" } )			
 	};
 
     app.render();
@@ -167,8 +172,10 @@ $(window).unload( function() {
     </script>
 
     <script type="text/html" id="application-game-board">
+      <div id='game-state'></div>
       <div id='trade-list'></div>
-      <div id='other-players'>will be replaced</div>	  
+      <div id='this-player'></div>	  
+      <div id='other-players'></div>	  
       <div id='hand'></div>
       <div id='offer-count'></div>
     </script>
@@ -187,6 +194,13 @@ $(window).unload( function() {
     <script type="text/html" id="application-game-offer-count">
     </script>
 
+	<script type="text/html" id="application-this-player">
+	    <div class="this-player">
+	      <%= name %>
+	    </div>
+	
+	</script>
+
     <script type="text/html" id="application-game-offer-count-number">
       <div><%= number %></div>
     </script>
@@ -200,6 +214,13 @@ $(window).unload( function() {
         <%= count %>
       </div>
     </script>
+    <script type="text/html" id="application-game-state">
+      <div class="game-state">
+        <%= state %>
+      </div>
+    </script>
+	
+	
 
     <script type="text/html" id="application-other-players">
     </br>	
